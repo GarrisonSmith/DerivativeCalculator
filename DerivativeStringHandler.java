@@ -11,7 +11,7 @@ public class DerivativeStringHandler {
 	/**
 	 * This method completes all needed functions to separate and condense the function into something the calculator can work
 	 * with.
-	 * @param function The function you want to format to be workable with the derivative calculator.
+	 * @param function The string function you want to format to be workable with the derivative calculator.
 	 * @param key VariableKey object where i strings and their associated functions will to be saved. 
 	 * @param parts Array-list where the function, split up by +'s and -'s, will be saved.
 	 * @return Returns the current state of the function, unsplit, after all modification are done.
