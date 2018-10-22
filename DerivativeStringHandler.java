@@ -11,22 +11,22 @@ public class DerivativeStringHandler {
 	/**
 	 * This method completes all needed functions to separate and condense the function into something the calculator can work
 	 * with.
-	 * @param function The function you want to format to be workable.
-	 * @param key
-	 * @param parts
-	 * @return
+	 * @param function The function you want to format to be workable with the derivative calculator.
+	 * @param key VariableKey object where i strings and their associated functions will to be saved. 
+	 * @param parts Array-list where the function, split up by +'s and -'s, will be saved.
+	 * @return Returns the current state of the function, unsplit, after all modification are done.
 	 */
 	public static String stringFormater(String function, VariableKey key, ArrayList<String> parts) {
 		
-		function = function.replaceAll(" ", "");
+		function = function.replaceAll(" ", ""); //removes any space present at input.
 		
-		function = parenthesisGrouper(function, key);
+		function = parenthesisGrouper(function, key); //Condenses all parenthesis in the function and assigns i string keys to them. 
 		
-		function = stringSplitHelper(function);
+		function = stringSplitHelper(function); //Sets up the function to be split up by the +'s and -'s.
 		
-		parts.addAll(stringSplitter(function));
+		parts.addAll(stringSplitter(function)); //Splits up the function by the +'s and -'s.
 		
-		function = function.replaceAll(" ", "");
+		function = function.replaceAll(" ", ""); //removes any lingering spaces after transformations.
 		
 		return function;
 	}
@@ -52,31 +52,29 @@ public class DerivativeStringHandler {
 		
 		return parts;
 	}
+	
 	/**
-	 * Sets up the function to be split by stringSplitter by adding a space before each - and +.
-	 * @param function The Function that is being set up to be split by stringSplitter.
-	 * @return The function, now set up to perform undergo stringSplitter.
+	 * Works by having the function's input spaces removed, and then adding spaces before each - and +,
+	 * then splitting up by the spaces.
+	 * @param function Function to be split up by the +'s and -'s.
+	 * @return List containing pieces of the function split up by +'s and -'s.
 	 */
-	private static String stringSplitHelper(String function) {
+	private static ArrayList<String> stringSplitter(String function) { 
 		
-		if(function.charAt(0) != '+' || function.charAt(0) != '-') {
-			function = "+" + function;
+		ArrayList<String> parts = new ArrayList<String>();
+		String[] split;
+		
+		split = function.split(" ");
+		
+		for(int x = 1; x < split.length; x++) {
+			parts.add(split[x]);
 		}
 		
-		for(int x = 0; x < function.length(); x++) {
-			if(function.charAt(x) == '+' || function.charAt(x) == '-') {
-				if(x == 0) {
-					function = " " + function;
-					x++;
-				}
-				else {
-					function = function.substring(0, x) + " " + function.substring(x, function.length());
-					x++;
-				}
-			}
+		for(int x = 1; x < parts.size(); x+=2) {
+			//parts.set(x, stringFormater(parts.get(x)));
 		}
 		
-		return function;
+		return parts;
 	}
 	
 	/**
