@@ -27,15 +27,13 @@ public class DerivativeCalculator {
 			
 		}
 		
-		function = function.replaceAll(" ", "");
-		
-		//System.out.println("Enter the number of times you want the derivate taken");
+		//System.out.println("Enter the number of times you want the derivative  taken");
 		//timesTaken = scan.nextInt();
 		System.out.println(" ");
 		
 		scan.close(); 
 		
-		function = DerivativeStringHandler.ParenthesisGrouper(function, key);
+		function = DerivativeStringHandler.stringFormater(function, key, parts);		
 		
 		System.out.println("Function:");
 		System.out.println(function);
@@ -45,8 +43,6 @@ public class DerivativeCalculator {
 			System.out.println(key.getIndex(x));
 		}
 		
-		parts = DerivativeStringHandler.StringSplitter(function);
-		
 		System.out.println("\nValues in parts:");
 		for(int x = 0; x < parts.size(); x++) {
 			System.out.println(parts.get(x));
@@ -54,7 +50,7 @@ public class DerivativeCalculator {
 		
 		System.out.println("");
 		System.out.println("Function:");
-		System.out.println(function);
+		System.out.println(function);  
 		
 		/*
 		System.out.println(" ");
