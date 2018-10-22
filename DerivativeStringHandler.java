@@ -1,31 +1,82 @@
 package DerivativeCalculator;
 
 import java.util.ArrayList;
-import java.util.List;
-
+/**
+ * Used to take an input function and complete the needed modification to standardize the syntax so that the derivative
+ * calculator functions can be processed.
+ * @author Garrison Smith
+ */
 public class DerivativeStringHandler {
 	
-	public static String StringGrouper(String function, VariableKey key) {
-		//This function will do all other functions so we don't have to call each one.
+	/**
+	 * This method completes all needed functions to separate and condense the function into something the calculator can work
+	 * with.
+	 * @param function The function you want to format to be workable.
+	 * @param key
+	 * @param parts
+	 * @return
+	 */
+	public static String stringFormater(String function, VariableKey key, ArrayList<String> parts) {
 		
-		return "dear god";
+		function = function.replaceAll(" ", "");
+		
+		function = parenthesisGrouper(function, key);
+		
+		function = stringSplitHelper(function);
+		
+		parts.addAll(stringSplitter(function));
+		
+		function = function.replaceAll(" ", "");
+		
+		return function;
 	}
 	
 	/**
 	 * @param function Function to be split up by the +'s and -'s.
 	 * @return List containing pieces of the function split up by +'s and -'s.
 	 */
-	public static ArrayList<String> StringSplitter(String function) { 
+	private static ArrayList<String> stringSplitter(String function) { 
 		
 		ArrayList<String> parts = new ArrayList<String>();
+		String[] split;
 		
-		String[] a = function.split("[-+]");
+		split = function.split(" ");
 		
-		for(int x = 0; x < a.length; x++) {
-			parts.add(a[x]);
+		for(int x = 1; x < split.length; x++) {
+			parts.add(split[x]);
+		}
+		
+		for(int x = 1; x < parts.size(); x+=2) {
+			//parts.set(x, stringFormater(parts.get(x)));
 		}
 		
 		return parts;
+	}
+	/**
+	 * Sets up the function to be split by stringSplitter by adding a space before each - and +.
+	 * @param function The Function that is being set up to be split by stringSplitter.
+	 * @return The function, now set up to perform undergo stringSplitter.
+	 */
+	private static String stringSplitHelper(String function) {
+		
+		if(function.charAt(0) != '+' || function.charAt(0) != '-') {
+			function = "+" + function;
+		}
+		
+		for(int x = 0; x < function.length(); x++) {
+			if(function.charAt(x) == '+' || function.charAt(x) == '-') {
+				if(x == 0) {
+					function = " " + function;
+					x++;
+				}
+				else {
+					function = function.substring(0, x) + " " + function.substring(x, function.length());
+					x++;
+				}
+			}
+		}
+		
+		return function;
 	}
 	
 	/**
@@ -34,24 +85,24 @@ public class DerivativeStringHandler {
 	 * @param key List that defines what each "i" string translates to.
 	 * @return String with "i" strings that equal their corresponding value in the Key list.
 	 */
-	public static String ParenthesisGrouper(String function, VariableKey key) {
+	private static String parenthesisGrouper(String function, VariableKey key) {
 		//Collapse the beginning function's highest tier parenthesis. 
-		function = DerivativeStringHandler.ParenthesisGrouperLogic(function, key);
+		function = parenthesisGrouperLogic(function, key);
 		
 		//Iterates through the list to collapse parenthesis that were not highest tier in original function.
 		for(int x = 0; x < key.getSize(); x++) {
-			key.setIndex(x, DerivativeStringHandler.ParenthesisGrouperLogic(key.getIndex(x), key));
+			key.setIndex(x, parenthesisGrouperLogic(key.getIndex(x), key));
 		}
 		
 		return function;
-	}//end of method
+	}
 	
 	/**
 	 * @param function String function that you want to collapse the highest tier parenthesis on. 
 	 * @param key List that defines what each "i" string translates to.
 	 * @return String with "i" strings that equal their corresponding value in the Key list.
 	 */
-	private static String ParenthesisGrouperLogic(String function, VariableKey key){
+	private static String parenthesisGrouperLogic(String function, VariableKey key){
 		
 		StringBuffer parts = new StringBuffer(function); //Copy of function that allows for easier editing.
 		
@@ -95,7 +146,7 @@ public class DerivativeStringHandler {
 				
 				//Will call the function again if there is another top tier parenthesis further into the string.
 				if(function.contains("(")) {
-					function = ParenthesisGrouper(function, key);
+					function = parenthesisGrouper(function, key);
 				}
 				
 				return function;
@@ -105,7 +156,7 @@ public class DerivativeStringHandler {
 		}//end of first for loop
 		
 		
-		return function;
-	}//end of method
+		return function; //if the function has no ('s.
+	}
 	
 }//end of class
