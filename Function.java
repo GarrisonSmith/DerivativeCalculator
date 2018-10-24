@@ -7,7 +7,7 @@ public class Function {
 	private String input;
 	private String current;
 	private String output = "Not Found Yet";
-	private ArrayList<String> key;
+	private VariableKey key = new VariableKey();
 	private ArrayList<String> parts;
 	
 	public Function(String input) {
