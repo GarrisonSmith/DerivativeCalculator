@@ -55,11 +55,11 @@ public class DerivativeStringHandler {
 	
 	/**
 	 * Works by having the function's input spaces removed, and then adding spaces before each - and +,
-	 * then splitting up by the spaces.
+	 * so that in stringSplitter can then split the function up.
 	 * @param function Function to be split up by the +'s and -'s.
 	 * @return List containing pieces of the function split up by +'s and -'s.
 	 */
-	private static ArrayList<String> stringSplitter(String function) { 
+	private static ArrayList<String> stringSplitterHelper(String function) { 
 		
 		ArrayList<String> parts = new ArrayList<String>();
 		String[] split;
