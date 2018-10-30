@@ -9,6 +9,7 @@ public class Function {
 	private String output = "Not Found Yet";
 	private VariableKey key = new VariableKey();
 	private ArrayList<String> parts;
+	private ArrayList<String> derivativeParts; //Parts but with the derivative taken
 	
 	public Function(String input) {
 		this.input = input;
