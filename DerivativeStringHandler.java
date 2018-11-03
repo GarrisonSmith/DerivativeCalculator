@@ -22,7 +22,7 @@ public class DerivativeStringHandler {
 		
 		function = parenthesisGrouper(function, key); //Condenses all parenthesis in the function and assigns i string keys to them. 
 		
-		function = stringSplitHelper(function); //Sets up the function to be split up by the +'s and -'s.
+		function = stringSplitterHelper(function); //Sets up the function to be split up by the +'s and -'s.
 		
 		parts.addAll(stringSplitter(function)); //Splits up the function by the +'s and -'s.
 		
