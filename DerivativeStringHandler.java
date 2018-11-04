@@ -16,17 +16,21 @@ public class DerivativeStringHandler {
 	 * @param parts Array-list where the function, split up by +'s and -'s, will be saved.
 	 * @return Returns the current state of the function, unsplit, after all modification are done.
 	 */
-	public static String stringFormater(String function, VariableKey key, ArrayList<String> parts) {
+	public static String stringFormater(String function, ArrayList<String> parts, VariableKey key) {
+
+		function = function.replace(" ", ""); //Removes any spaces in the initial function.
 		
-		function = function.replaceAll(" ", ""); //removes any space present at input.
+		function = parenthesisCollapser(function, key); //Collapses any initial parenthesis in the function.
 		
-		function = parenthesisGrouper(function, key); //Condenses all parenthesis in the function and assigns i string keys to them. 
+		function = parenthesisGrouper(function, key); //Groups together any parts of the function that can be inferred.
 		
-		function = stringSplitterHelper(function); //Sets up the function to be split up by the +'s and -'s.
+		function = stringSplitHelper(function); //Sets up the function to be split by +'s and -'s.
 		
-		parts.addAll(stringSplitter(function)); //Splits up the function by the +'s and -'s.
+		parts.addAll(stringSplitter(function)); //Split up the function by the +'s and -'s and adds the parts to parts.
 		
-		function = function.replaceAll(" ", ""); //removes any lingering spaces after transformations.
+		parenthesisGrouper(key); //Groups anything currently in key that can be grouped.
+		
+		function = function.replaceAll(" ", ""); //Removes any lingering spaces in the function.
 		
 		return function;
 	}
@@ -46,35 +50,114 @@ public class DerivativeStringHandler {
 			parts.add(split[x]);
 		}
 		
-		for(int x = 1; x < parts.size(); x+=2) {
-			//parts.set(x, stringFormater(parts.get(x)));
-		}
-		
 		return parts;
 	}
 	
 	/**
-	 * Works by having the function's input spaces removed, and then adding spaces before each - and +,
-	 * so that in stringSplitter can then split the function up.
-	 * @param function Function to be split up by the +'s and -'s.
-	 * @return List containing pieces of the function split up by +'s and -'s.
+	 * Sets up the function to be split by stringSplitter by adding a space before each - and +.
+	 * @param function The Function that is being set up to be split by stringSplitter.
+	 * @return The function, now set up to perform undergo stringSplitter.
 	 */
-	private static ArrayList<String> stringSplitterHelper(String function) { 
+	private static String stringSplitHelper(String function) {
 		
-		ArrayList<String> parts = new ArrayList<String>();
-		String[] split;
-		
-		split = function.split(" ");
-		
-		for(int x = 1; x < split.length; x++) {
-			parts.add(split[x]);
+		if(function.charAt(0) != '+' || function.charAt(0) != '-') {
+			function = "+" + function;
 		}
 		
-		for(int x = 1; x < parts.size(); x+=2) {
-			//parts.set(x, stringFormater(parts.get(x)));
+		for(int x = 0; x < function.length(); x++) {
+			if(function.charAt(x) == '+' || function.charAt(x) == '-') {
+				if(x == 0) {
+					function = " " + function;
+					x++;
+				}
+				else {
+					function = function.substring(0, x) + " " + function.substring(x, function.length());
+					x++;
+				}
+			}
 		}
 		
-		return parts;
+		return function;
+	}
+	
+	/**
+	 * Condenses all the functions in key as much as possible.
+	 * @param key The key to have all of it's function condensed down in.
+	 */
+	private static void parenthesisGrouper(VariableKey key) {
+		
+		for(int x = 1; x < key.getSize(); x+=2) {
+			while(parenthesisGrouperHelperHelper(key.getIndex(x))) {
+				 key.setIndex(x, parenthesisGrouperHelper(key.getIndex(x)));
+				key.setIndex(x, parenthesisCollapserHelper(key.getIndex(x), key));
+			}
+		}
+	}
+	
+	/**
+	 * Condenses the given function as much as can possibly be done.
+	 * @param function The function to be condensed.
+	 * @param key key to have the condensed form solutions coded into.
+	 * @return the function now condensed.
+	 */
+	private static String parenthesisGrouper(String function, VariableKey key) {
+		
+		while(parenthesisGrouperHelperHelper(function)) {
+			function = parenthesisGrouperHelper(function);
+			function = parenthesisCollapser(function, key);
+		}
+		
+		return function;
+	}
+	
+	/**
+	 * Puts parenthesis around the first set of numbers it find, reinforces order of operations.
+	 * @param function The function to have parenthesis added in.
+	 * @return The function, now with parenthesis added in.
+	 */
+	private static String parenthesisGrouperHelper(String function) {
+
+		int start = 0; //Tracks where a operator was first found.
+		int end = 0; //Tracks where a new operator was found.
+		
+		for(; start < function.length(); start++) {
+				
+			if(function.charAt(start) == '*' || function.charAt(start) == '/' || function.charAt(start) == '^') {
+			
+				for(end = start+1; end < function.length(); end++) {
+					
+					if(function.charAt(end) == '*' || function.charAt(end) == '/' || function.charAt(end) == '^' || function.charAt(end) == '+' || function.charAt(end) == '-') {
+						
+						function = "(" + function.substring(0, end) + ")" + function.substring(end, function.length());
+						
+						return function;
+					}
+				}
+			}
+		}
+		function = "(" + function + ")";
+		return function;
+	}
+	
+	/**
+	 * Method to decided if parenthesis need to be added or not.
+	 * @param function The function to be evaluated.
+	 * @return True if the function should have parenthesis added, false if it should not.
+	 */
+	private static boolean parenthesisGrouperHelperHelper(String function) {
+		int count = 0;
+		
+		for(int x = 0; x < function.length(); x++) {
+			if(function.charAt(x) == '*' || function.charAt(x) == '/' || function.charAt(x) == '^') {
+				count++;
+			}
+		}
+		
+		if(count > 1) {
+			return true;
+		}
+		
+		return false;
 	}
 	
 	/**
@@ -83,13 +166,14 @@ public class DerivativeStringHandler {
 	 * @param key List that defines what each "i" string translates to.
 	 * @return String with "i" strings that equal their corresponding value in the Key list.
 	 */
-	private static String parenthesisGrouper(String function, VariableKey key) {
+	private static String parenthesisCollapser(String function, VariableKey key) {
 		//Collapse the beginning function's highest tier parenthesis. 
-		function = parenthesisGrouperLogic(function, key);
+		function = parenthesisCollapserHelper(function, key);
 		
 		//Iterates through the list to collapse parenthesis that were not highest tier in original function.
+	
 		for(int x = 0; x < key.getSize(); x++) {
-			key.setIndex(x, parenthesisGrouperLogic(key.getIndex(x), key));
+			key.setIndex(x, parenthesisCollapserHelper(key.getIndex(x), key));
 		}
 		
 		return function;
@@ -100,55 +184,54 @@ public class DerivativeStringHandler {
 	 * @param key List that defines what each "i" string translates to.
 	 * @return String with "i" strings that equal their corresponding value in the Key list.
 	 */
-	private static String parenthesisGrouperLogic(String function, VariableKey key){
+	private static String parenthesisCollapserHelper(String function, VariableKey key){
 		
-		StringBuffer parts = new StringBuffer(function); //Copy of function that allows for easier editing.
+		StringBuffer change = new StringBuffer(function); //Copy of function that allows for easier editing.
 		
 		int layers = 0; //Tracks number of layer of parenthesis the function is deep in.
 		int start = 0; //Tracks the substring index lower bound that will be added to parts.
 		int end = 0; //Tracks the substring index higher number bound that will be added to parts.
 		
-		//Iterates through the string until a ( is found (first if statement).
-		for(; end < parts.length(); end++) {
+		//Iterates through the function until a ( is found (first if statement).
+		for(; end < change.length(); end++) {
 			
 			if(function.charAt(end) == '(') {
 				
-				start = end; //Sets start equal to part because this is the index number where the first ( was found.
+				start = end; //Sets start equal to end because this is the index number where the first ( was found.
 				
-				//Iterates through the number string until a matching ) is found for the ( found above.
-				for(;layers != -1; end++) {
+				//Iterates through the function until a matching ) is found for the ( found above.
+				for(;; end++) {
 					
 					//Executes if there is an unbalanced number of )'s compared to ('s.
-					if(end == parts.length()) {
+					if(end == change.length()) {
 						function = "Function not valid notation, please enter a proper function";
 						return function;
 					}
 					
-					if(parts.charAt(end) == '(') {
+					if(change.charAt(end) == '(') {
 						layers++;
 					}
-					else if(parts.charAt(end) == ')') {
+					else if(change.charAt(end) == ')') {
 						layers--;
 						if(layers == 0) {
-							layers = -1; //Escape condition, I don't know why I can't just put a break statement here?.
+							break; //breaks out of the inner for loop.
 						}
 					}
 					
 				}//end of inner for loop
 				
-				key.addKey(function.substring(start+1, end-1)); //Adds the grouped () to the key and assigns an i string.
+				key.addKey(function.substring(start+1, end)); //Adds the grouped () to the key and assigns an i string.
 				
-				parts.replace(start, end, key.getKey(function.substring(start+1, end -1))); //Replaces the () substring with the i string.
+				change.replace(start, end+1, key.getKey(function.substring(start+1, end))); //Replaces the () substring with the i string.
 				
-				function = parts.toString();
+				function = change.toString();
 				
 				//Will call the function again if there is another top tier parenthesis further into the string.
 				if(function.contains("(")) {
-					function = parenthesisGrouper(function, key);
+					function = parenthesisCollapserHelper(function, key);
 				}
 				
 				return function;
-				
 			}//end of if statement
 			
 		}//end of first for loop
@@ -157,4 +240,4 @@ public class DerivativeStringHandler {
 		return function; //if the function has no ('s.
 	}
 	
-}//end of class
+}
