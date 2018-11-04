@@ -12,8 +12,8 @@ public class DerivativeStringHandler {
 	 * This method completes all needed functions to separate and condense the function into something the calculator can work
 	 * with.
 	 * @param function The string function you want to format to be workable with the derivative calculator.
-	 * @param key VariableKey object where i strings and their associated functions will to be saved. 
 	 * @param parts Array-list where the function, split up by +'s and -'s, will be saved.
+	 * @param key VariableKey object where i strings and their associated functions will to be saved. 
 	 * @return Returns the current state of the function, unsplit, after all modification are done.
 	 */
 	public static String stringFormater(String function, ArrayList<String> parts, VariableKey key) {
@@ -107,6 +107,9 @@ public class DerivativeStringHandler {
 			function = parenthesisCollapser(function, key);
 		}
 		
+		function = parenthesisGrouperHelper(function);
+		function = parenthesisCollapser(function, key);
+		
 		return function;
 	}
 	
@@ -134,7 +137,12 @@ public class DerivativeStringHandler {
 					}
 				}
 			}
+			else if(function.charAt(start) == '+' || function.charAt(start) == '-') {
+				function = function.substring(0, start+1) + parenthesisGrouperHelper(function.substring(start+1, function.length()));
+				return function;
+			}
 		}
+		
 		function = "(" + function + ")";
 		return function;
 	}
