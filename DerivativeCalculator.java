@@ -1,24 +1,22 @@
 package DerivativeCalculator;
 
 import java.util.Scanner;
-import java.util.ArrayList;
 
 public class DerivativeCalculator {
 	
 	public static void main (String[] args) {
 		
-		String function;
-		ArrayList<String> parts = new ArrayList<String>();
-		VariableKey key = new VariableKey();
-		int timesTaken = 1;
+		
+		Function function = new Function();
+		//int timesTaken = 1;
 		Scanner scan = new Scanner(System.in);	
 		
 		while(true) {
 			
 			System.out.println("Enter a function: f(x) = ");
-			function = scan.nextLine();
+			function.setInput(scan.nextLine());
 			
-			if(function.equals("Directions")) {
+			if(function.getInput().equals("Directions")) {
 				System.out.println("\nDirections will be here I guess\n");
 			}
 			else {
@@ -33,43 +31,31 @@ public class DerivativeCalculator {
 		
 		scan.close(); 
 		
-		function = DerivativeStringHandler.stringFormater(function, key, parts);		
+		/*
+		String test = "7*84/7*1512"
+				+ ""
+				+ "";
+		
+		test = DerivativeStringHandler.parentheisGrouper(test);
+	
+		System.out.println(test);
+		*/
+		
+		function.formatFunction();
 		
 		System.out.println("Function:");
 		System.out.println(function);
 		
 		System.out.println("\nValues in key:");
-		for(int x = 0; x < key.getSize(); x++) {
-			System.out.println(key.getIndex(x));
-		}
+		function.printKey();
 		
 		System.out.println("\nValues in parts:");
-		for(int x = 0; x < parts.size(); x++) {
-			System.out.println(parts.get(x));
-		}
+		function.printParts();
 		
 		System.out.println("");
 		System.out.println("Function:");
 		System.out.println(function);  
 		
-		/*
-		System.out.println(" ");
 		
-		for(int x = 0; x < parts.size(); x++) {
-			if(parts.get(x).contains("(")) {
-				parts.set(x, (DerivativeStringHandler.StringGrouper(parts.get(x), key)));
-			}
-		}
-		
-		for(int x = 0; x < parts.size(); x++) {
-			System.out.println(parts.get(x));
-		}
-		
-		System.out.println(" ");
-		
-		for(int x = 0; x < key.size(); x++) {
-			System.out.println(key.get(x));
-		}
-		*/
-	}//
+	}
 }
