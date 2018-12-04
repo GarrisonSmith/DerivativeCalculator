@@ -35,6 +35,62 @@ public class DerivativeStringHandler {
 		return function;
 	}
 	
+	public static String stringFormater(String function, VariableKey key) {
+
+		char first = function.charAt(0);
+		
+		function = function.substring(1, function.length());
+		
+		function = function.replace(" ", ""); //Removes any spaces in the initial function.
+		
+		function = parenthesisCollapser(function, key); //Collapses any initial parenthesis in the function.
+		
+		function = parenthesisGrouper(function, key); //Groups together any parts of the function that can be inferred.
+		
+		parenthesisGrouper(key); //Groups anything currently in key that can be grouped.
+		
+		function = function.replaceAll(" ", ""); //Removes any lingering spaces in the function.
+		
+		function = first + function;
+		
+		return function;
+	}
+	
+	/**
+	 * Expands all i keys out to be the functions they represent.
+	 * @param function The function you want the i keys to be expanded out in.
+	 * @param key The key holding the definitions for the i key you want to expand out.
+	 * @return the function, now with all i keys expanded.
+	 */
+	public static String iExpander(String function, VariableKey key) {
+		while(function.contains("_")) {
+			function = iExpanderHelper(function, key);
+		}
+		
+		return function;
+	}
+	
+	private static String iExpanderHelper(String function, VariableKey key) {
+		int start = 0;
+		int end = 0;
+		
+		for(start = 0; start < function.length(); start++) {
+				
+			if(function.charAt(start) == '_') {
+					
+				for(end = start+1; end < function.length(); end++) {
+						
+					if(function.charAt(end) == '_') {
+							function = function.substring(0, start) + "(" + key.getFunction(function.substring(start, end+1)) + ")" + function.substring(end+1, function.length());
+							return function;
+					}
+				}
+			}
+		}
+		
+		return function;
+	}
+	
 	/**
 	 * @param function Function to be split up by the +'s and -'s.
 	 * @return List containing pieces of the function split up by +'s and -'s.
@@ -143,7 +199,7 @@ public class DerivativeStringHandler {
 			}
 		}
 		
-		function = "(" + function + ")";
+		//function = "(" + function + ")";
 		return function;
 	}
 	
