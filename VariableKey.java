@@ -97,6 +97,10 @@ public class VariableKey{
 		}
 	}
 	
+	public void clearKey() {
+		key = new ArrayList<String>();
+	}
+	
 	/**
 	 * Generates a new i key by adding another i on top of the last one.
 	 * @param function function you want to generate a new i key for, only makes a new one if it doesn't already have one.
