@@ -8,7 +8,7 @@ import java.util.ArrayList;
  */
 public class Function {
 	
-	private String input; //The function we start with
+	private String input = "Nothing has been Inputted"; //The function we start with
 	private String current = "Nothing In Progress"; //Function after currently applied operations
 	private String output = "Not Found Yet"; //What we end up with.
 	private VariableKey key = new VariableKey(); //Tracks the i keys and the functions they represent
@@ -36,7 +36,7 @@ public class Function {
 	 * Takes the derivative of the input function and sets it equal to output.
 	 */
 	public void takeDerivative() {
-		
+		output = FunctionDeterminer.applyRule(input);
 	}
 	
 	/**
@@ -139,6 +139,57 @@ public class Function {
 	public void printDerivativeParts() {
 		for(String x : derivativeParts) {
 			System.out.println(x);
+		}
+	}
+	
+	/**
+	 * Puts the function back together based off what is found in parts.
+	 * @param expand Boolean for if you want the i keys to be expanded or not.
+	 * @return the function reconstructed based off the contents of parts.
+	 */
+	public String constructFunction(boolean expand) {
+		String function = "";
+		
+		for(String x : parts) {
+			function += x;
+		}
+		
+		if(expand) {
+			function = DerivativeStringHandler.iExpander(function, key);
+		}
+		
+		return function;
+	}
+	
+	/**
+	 * Puts the derivative function together based off what is found in derivative parts.
+	 * @param expand Boolean for if you want the i keys to be expanded or not.
+	 * @return the derivative reconstructed based off the contents of derivative parts.
+	 */
+	public String constructDerivative(boolean expand) {
+		String function = "";
+		
+		for(String x : derivativeParts) {
+			function += x;
+		}
+		
+		if(expand) {
+			
+		}
+		
+		return function;
+	}
+	
+	public void expandParts() {
+		for(int x = 0; x < parts.size(); x++) {
+			parts.set(x, DerivativeStringHandler.iExpander(parts.get(x), key));
+		}
+		key.clearKey();
+	}
+	
+	public void collapseParts() {
+		for(int x = 0; x < parts.size(); x++) {
+			parts.set(x, DerivativeStringHandler.stringFormater(parts.get(x), key));
 		}
 	}
 	
