@@ -37,6 +37,12 @@ public class VariableKey{
 		return Idecider(function);
 	}
 	
+	public String forceAddKey(String function) {
+		key.add(forceIdecider());
+		key.add(function);
+		return forceIdecider();
+	}
+	
 	/**
 	 * Sets the string of the given index equal to the given string.
 	 * @param index The index you want to replace the contents of.
@@ -47,8 +53,22 @@ public class VariableKey{
 	}
 	
 	/**
+	 * Returns true if the given key is a stored key.
+	 * @param key Key to be checked.
+	 * @return True if key is known, false if not.
+	 */
+	public boolean isKey(String key) {
+		for(int x = 0; x <= this.key.size()-1; x+=2) {
+			if((this.key.get(x)).equals(key)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	/**
 	 * @param function Function you want to get the corresponding i key for.
-	 * @return the i key that is represented by the given function, if the function has no i key "Unknown Function" will be returned.
+	 * @return the i key that is represented by the given function, if the function has no i key null will be returned.
 	 */
 	public String getKey(String function) {
 		
@@ -56,13 +76,13 @@ public class VariableKey{
 			return key.get(key.indexOf(function)-1);
 		}
 		
-		return "Unknown Function";
+		return null;
 		
 	}
 	
 	/**
 	 * @param Ikey i key you want to get the corresponding function for.
-	 * @return the function that is being represented by the given i key, if the i key has no function "Unknown Key" will be returned.
+	 * @return the function that is being represented by the given i key, if the i key has no function null will be returned.
 	 */
 	public String getFunction(String Ikey) {
 		
@@ -70,7 +90,7 @@ public class VariableKey{
 			return key.get(key.indexOf(Ikey)+1);
 		}
 		
-		return "Unknown Key";
+		return null;
 	}
 	
 	/**
@@ -123,4 +143,14 @@ public class VariableKey{
 		}
 	}
 	
+	private String forceIdecider() {
+		String i = "_i";
+		
+		while(key.contains(i + "_")) {
+			i = i + "i";
+		}
+		i = i + "_";
+		
+		return i;
+	}
 }
