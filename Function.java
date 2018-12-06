@@ -14,7 +14,6 @@ public class Function {
 	private VariableKey key = new VariableKey(); //Tracks the i keys and the functions they represent
 	private VariableKey derivativeKey = new VariableKey(); //Key but with the corresponding derivatives taken
 	private ArrayList<String> parts = new ArrayList<String>(); //Contains the function split up by the +'s and -'s
-	private ArrayList<String> derivativeParts = new ArrayList<String>(); //Parts but with the derivative taken
 	
 	/**
 	 * Creates a function object with no initial input.
@@ -33,10 +32,20 @@ public class Function {
 	} 
 	
 	/**
+	 * Takes the derivative of everything in key.
+	 */
+	public void fillDerivativeKey() {
+		for(int x = 1; x <= key.getSize(); x+=2) {
+			derivativeKey.forceAddKey(FunctionDeterminer.applyRule(key.getIndex(x), key));
+			//derivativeKey.addKey(key.getIndex(x));
+		}
+	}
+	
+	/**
 	 * Takes the derivative of the input function and sets it equal to output.
 	 */
 	public void takeDerivative() {
-		output = FunctionDeterminer.applyRule(input);
+		output = constructDerivative(true);
 	}
 	
 	/**
@@ -103,14 +112,6 @@ public class Function {
 	}
 	
 	/**
-	 * Method to return the derivative parts for the split up function.
-	 * @return derivative parts of the split up function.
-	 */
-	public ArrayList<String> getDerivativeParts(){
-		return derivativeParts;
-	}
-	
-	/**
 	 * Method to print out the contents of the i key.
 	 */
 	public void printKey() {
@@ -129,15 +130,6 @@ public class Function {
 	 */
 	public void printParts() {
 		for(String x : parts) {
-			System.out.println(x);
-		}
-	}
-	
-	/**
-	 * Method to print out the contents of derivative parts.
-	 */
-	public void printDerivativeParts() {
-		for(String x : derivativeParts) {
 			System.out.println(x);
 		}
 	}
@@ -169,12 +161,12 @@ public class Function {
 	public String constructDerivative(boolean expand) {
 		String function = "";
 		
-		for(String x : derivativeParts) {
+		for(String x : parts) {
 			function += x;
 		}
 		
 		if(expand) {
-			
+			function = DerivativeStringHandler.iExpander(function, derivativeKey);
 		}
 		
 		return function;
@@ -197,6 +189,7 @@ public class Function {
 	 * Method to get a string information on the current states of everything.
 	 */
 	public String toString() {
+		takeDerivative();
 		return "Input Function: "+input+" Current Function: "+current+" Output Function: "+output;
 	}
 }
