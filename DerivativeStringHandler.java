@@ -17,7 +17,7 @@ public class DerivativeStringHandler {
 	 * @return Returns the current state of the function, unsplit, after all modification are done.
 	 */
 	public static String stringFormater(String function, ArrayList<String> parts, VariableKey key) {
-
+		
 		function = function.replace(" ", ""); //Removes any spaces in the initial function.
 		
 		function = parenthesisCollapser(function, key); //Collapses any initial parenthesis in the function.
