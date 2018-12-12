@@ -4,3 +4,11 @@ Derivative Calculator is just a driver.
 DerivativeStringHandler.java contains methods that will edit the inital input funtion down to something we can work with.
 VariableKey.java is an object containing an arraylist that will hold "keys" to assigned variable names. IE. _i_ = 8+7.
 Version 1 was *completed* 12/6/18, or at the end of Fall 2018.
+
+Problems:
+No Simplification of expression.
+An excess amount of parenthesis on output.
+Very finicky input rules.
+No interface.
+
+However the calculator does *mostly* manage to compute the derivative of most functions.
