@@ -4,9 +4,11 @@ import java.util.List;
 import java.util.ArrayList;
 
 /**
+ * Data structure for storing keys that represent string functions.
+ * Each one is stored into a string array order as {key, function, derivative}.
+ * Uses an ArrayList of String[] as the backbone structure.
  *
- *
- * @author Garrison Smith 12/14/18
+ * @author Garrison Smith 12/15/18
  */
 public class FunctionKey {
     /**
@@ -24,7 +26,7 @@ public class FunctionKey {
      * Sets the default key type to be 'i'.
      */
     public FunctionKey(){
-        data = new ArrayList();
+        data=new ArrayList();
         this.type = 'i';
     }
 
@@ -33,7 +35,7 @@ public class FunctionKey {
      * @param type the char that will be used inside the keys.
      */
     public FunctionKey(char type){
-        data = new ArrayList();
+        data=new ArrayList();
         this.type = type;
     }
 
@@ -43,30 +45,54 @@ public class FunctionKey {
      * @param function the function being added.
      * @return the string representing the function that was given.
      */
-    public String addFunction(String function){
-        if(containsFunction(function) != null)
+    public String addFunction(String function) {
+        if (containsFunction(function) != null)
             return containsFunction(function);
 
         String[] array = new String[3];
         array[0] = KeyGenerator();
         array[1] = function;
         data.add(array);
-        return array[0];
+
+        removeRedundancy();
+
+        try {
+            return getFunctionKey(function);
+        }
+        catch(IllegalArgumentException e){
+            return function;
+        }
+    }
+
+    /**
+     * Returns the key corresponding with the given function.
+     * @param function the function corresponding with the key.
+     * @return the targeted key.
+     * @throws IllegalArgumentException if the function has no corresponding key.
+     */
+    public String getFunctionKey(String function){
+        for(String[] i : data){
+            if(i[1].equals(function)){
+                return i[0];
+            }
+        }
+
+        throw new IllegalArgumentException("Unknown Function: "+function);
     }
 
     /**
      * Returns the original function corresponding with the given key.
-     * @param key the key corresponding with the key.
+     * @param key the key corresponding with the function.
      * @return the targeted function.
      * @throws IllegalArgumentException if the key is unknown.
      */
     public String getFunction(String key){
         for(String[] i : data){
-            if(i[0] == key)
+            if(i[0].equals(key))
                 return i[1];
         }
 
-        throw new IllegalArgumentException("Unknown Key");
+        throw new IllegalArgumentException("Unknown Key: "+key);
     }
 
     /**
@@ -77,11 +103,11 @@ public class FunctionKey {
      */
     public String getDerivative(String key){
         for(String[] i : data){
-            if(i[0] == key)
+            if(i[0].equals(key))
                 return i[2];
         }
 
-        throw new IllegalArgumentException("Unknown Key");
+        throw new IllegalArgumentException("Unknown Key: "+key);
     }
 
     /**
@@ -91,7 +117,7 @@ public class FunctionKey {
      */
     public void setDerivative(String key, String derivative){
         for(String[] i : data){
-            if(i[0] == key) {
+            if(i[0].equals(key)) {
                 i[2] = derivative;
                 break;
             }
@@ -105,7 +131,7 @@ public class FunctionKey {
      */
     private boolean containsKey(String key){
         for(String[] i : data){
-            if(i[0] == key)
+            if(i[0].equals(key))
                 return true;
         }
 
@@ -119,7 +145,7 @@ public class FunctionKey {
      */
     private String containsFunction(String function){
         for(String[] i : data){
-            if(i[1] == function)
+            if(i[1].equals(function))
                 return i[0];
         }
 
@@ -131,7 +157,7 @@ public class FunctionKey {
      * @return the key representing the function.
      */
     private String KeyGenerator() {
-        String key = "_"+type;
+        String key="_"+type;
 
         while(containsKey(key+"_")){
             key+=type;
@@ -141,12 +167,31 @@ public class FunctionKey {
     }
 
     /**
-     * Prints data for testing.
+     * Removes redundant keys from data.
+     * Redundant keys are keys that only represent other keys.
+     */
+    private void removeRedundancy(){
+        String key="_"+type;
+
+        for(int x=0; x < data.size(); x++){
+            if(containsKey(data.get(x)[1])){
+                data.remove(x);
+            }
+        }
+
+        for(String[] i : data){
+            i[0]=key+"_";
+            key+=type;
+        }
+    }
+
+    /**
+     * Prints data's contents for testing.
      */
     public void toSting(){
-        int n = 0;
+        int n=0;
         for(String[] x : data){
-            System.out.print("\nData index:["+n+"]: ");
+            System.out.print("\nData index:["+n+"]:|");
             for(String y : x){
                 System.out.print(y + "|");
             }
