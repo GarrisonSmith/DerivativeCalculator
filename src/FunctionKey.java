@@ -50,7 +50,7 @@ public class FunctionKey {
             return containsFunction(function);
 
         String[] array = new String[3];
-        array[0] = KeyGenerator();
+        array[0] = keyGenerator();
         array[1] = function;
         data.add(array);
 
@@ -156,7 +156,7 @@ public class FunctionKey {
      * Generates a new key for a new function.
      * @return the key representing the function.
      */
-    private String KeyGenerator() {
+    private String keyGenerator() {
         String key="_"+type;
 
         while(containsKey(key+"_")){
@@ -188,7 +188,7 @@ public class FunctionKey {
     /**
      * Prints data's contents for testing.
      */
-    public void toSting(){
+    public void print(){
         int n=0;
         for(String[] x : data){
             System.out.print("\nData index:["+n+"]:|");
