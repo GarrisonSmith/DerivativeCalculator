@@ -19,7 +19,7 @@ public class FunctionKey {
     /**
      * The char that will be used in the keys.
      */
-    char type;
+    private char type;
 
     /**
      * Creates an ArrayList that will hold the key and it's contents.
@@ -110,6 +110,10 @@ public class FunctionKey {
         throw new IllegalArgumentException("Unknown Key: "+key);
     }
 
+    public String[] getElement(int x){
+        return data.get(x);
+    }
+
     /**
      * Sets the derivative of the given key with the given derivative.
      * @param key the key to have the derivative plugged into.
@@ -122,6 +126,14 @@ public class FunctionKey {
                 break;
             }
         }
+    }
+
+    /**
+     * Returns the number of elements being stored.
+     * @return the number of elements being stored in the key.
+     */
+    public int length(){
+        return data.size();
     }
 
     /**
@@ -191,9 +203,9 @@ public class FunctionKey {
     public void print(){
         int n=0;
         for(String[] x : data){
-            System.out.print("\nData index:["+n+"]:|");
+            System.out.print("\nData index:["+n+"]:");
             for(String y : x){
-                System.out.print(y + "|");
+                System.out.print("[" + y + "]");
             }
             n++;
         }

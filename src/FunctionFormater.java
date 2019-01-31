@@ -10,7 +10,7 @@ public class FunctionFormater {
      * @param key the key to be used when condensing the function.
      * @return the function now formatted and condensed.
      */
-    public static String format(String function, FunctionKey key){
+    public static String condense(String function, FunctionKey key){
         function=function.replace(" ", "");
         function=parenthesisCollapser(function, key);
 
@@ -165,6 +165,34 @@ public class FunctionFormater {
                             + "(" +key.getDerivative(function.substring(start, end+1)) + ")"
                             + function.substring(end+1), key);
             }
+
+        return function;
+    }
+
+    /**
+     * Adds a '|' in front of each '^', '*', '/' within the function.
+     * Used to signify that an operative has not been attempted to evaluate.
+     * @param function the function to have '|'s added in where appropriate.
+     * @return the function with '|'s added in.
+     */
+    private static String preOperationsFlag(String function){
+        function = function.replaceAll("\\^", "|^");
+        function = function.replaceAll("\\*", "|*");
+        function = function.replaceAll("/", "|/");
+
+        return function;
+    }
+
+    /**
+     * Moves any '|'s from in front of each '^', '*', '/' to behind each one within the function.
+     * Used to signify that an operative has been attempted to evaluate.
+     * @param function the function with the '|'s moved to the front.
+     * @return the function with '|'s moved behind each '^', '*', '/'.
+     */
+    private static String postOperationsFlag(String function){
+        function = function.replaceAll("\\|\\^", "^|");
+        function = function.replaceAll("\\|\\*", "*|");
+        function = function.replaceAll("\\|/", "/|");
 
         return function;
     }

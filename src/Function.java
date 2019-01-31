@@ -100,14 +100,23 @@ public class Function {
      * Does all needed formatting for the function, also gets parts.
      */
     private void formatInput(){
-        current=FunctionFormater.format(current, key);
+        current=FunctionFormater.condense(current, key);
         try {
             parts = FunctionFormater.partsSplitter(current);
-            for(int x=0; x<parts.length; x++){
-                parts[x]=FunctionFormater.parenthesisGrouper(parts[x], key);
+            for(int x=0; x<parts.length; x++) {
+                parts[x] = FunctionFormater.parenthesisGrouper(parts[x], key);
             }
         }
         catch(IllegalArgumentException NoParts){}
+    }
+
+    /**
+     *
+     */
+    private void formatKey(){
+       for(int x=0; x<key.length(); x++){
+
+       }
     }
 
     /**
