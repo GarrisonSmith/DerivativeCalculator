@@ -32,7 +32,6 @@ public class Function {
     /**
      * Constructs a new Function with a FunctionKey and take an input function.
      * @param function the input function.
-     * @param type the symbol that will appear within the data key.
      */
     public Function(String function){
         input=current=function;
@@ -92,8 +91,19 @@ public class Function {
         stages.add("Function after Formatting: "); stages.add(current);
         constructParts();
         stages.add("Function after being assembled from parts: "); stages.add(current);
+        key.print();
+        simplify();
+        stages.add("Key now simplified");
+
 
         return null;
+    }
+
+    /**
+     *
+     */
+    private void simplify(){
+       FunctionSimplifier.simplify(key);
     }
 
     /**
@@ -106,16 +116,17 @@ public class Function {
             for(int x=0; x<parts.length; x++) {
                 parts[x] = FunctionFormater.parenthesisGrouper(parts[x], key);
             }
+            formatKey();
         }
         catch(IllegalArgumentException NoParts){}
     }
 
     /**
-     *
+     * Formats each element in the key for simplification.
      */
     private void formatKey(){
        for(int x=0; x<key.length(); x++){
-
+            key.setFunction(FunctionFormater.preOperationsFlag(key.getElement(x)[1]), x);
        }
     }
 
@@ -134,7 +145,7 @@ public class Function {
      * Prints the process for testing.
      */
     public void showSteps(){
-        System.out.println("----Stages----");
+        System.out.println("\n\n----Stages----");
         for(String i : stages) {
             System.out.println(i);
         }
@@ -146,6 +157,6 @@ public class Function {
             System.out.println(i);
         }
         System.out.println( "Function Expanded\n" +
-                FunctionFormater.functionKeyExpander(current, key));
+                FunctionFormater.functionKeyExpander(current, key).replace("|", ""));
     }
 }

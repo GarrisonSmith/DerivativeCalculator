@@ -115,6 +115,19 @@ public class FunctionKey {
     }
 
     /**
+     * Sets the given index's function to be the given function.
+     * @param function the function to be set.
+     * @param index the index to be have the function set to.
+     */
+    public void setFunction(String function, int index){
+        String[] temp;
+
+        temp = data.get(index);
+        temp[1] = function;
+        data.set(index, temp);
+    }
+
+    /**
      * Sets the derivative of the given key with the given derivative.
      * @param key the key to have the derivative plugged into.
      * @param derivative the derivative being plugged into the key.
@@ -141,7 +154,7 @@ public class FunctionKey {
      * @param key the key to be checked.
      * @return true if the key is found, false if not.
      */
-    private boolean containsKey(String key){
+    public boolean containsKey(String key){
         for(String[] i : data){
             if(i[0].equals(key))
                 return true;

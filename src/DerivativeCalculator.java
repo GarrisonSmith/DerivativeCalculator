@@ -3,10 +3,10 @@ package DerivativeCalculator;
 public class DerivativeCalculator {
 
     public static void main (String[] args) {
-        String function="-1415*14/1125*14^2^(13*125)*123-24";
+        String function="-1415*14/1125*14^2^(13.05x^2*125)*123-24";
         calculateDerivative(function);
         //System.out.println(FunctionFormater.leftAndRight("12")[0]);
-        //System.out.println(FunctionSimplifier.multiply("123x^141*1243x^141"));
+        //System.out.println("\n"+FunctionSimplifier.getType("12|+3"));
 
     }
 

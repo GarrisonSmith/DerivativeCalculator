@@ -55,7 +55,7 @@ public class FunctionFormater {
         boolean pass=false;
 
         if(function.contains("^")){
-            int start = end = function.indexOf('^');
+            int start = end = function.lastIndexOf('^');
 
             for(end++; end < function.length(); end++){
                 if(function.charAt(end) == '/' || function.charAt(end) == '*' || function.charAt(end) == '^')
@@ -66,8 +66,7 @@ public class FunctionFormater {
                     break;
             }
 
-            function = function.substring(0, start+1) + "(" + function.substring(start+1, end) + ")" + function.substring(end);
-            function = parenthesisCollapser(function, key);
+            function = function.substring(0, start+1) + key.addFunction(function.substring(start+1, end))+ function.substring(end);
             return parenthesisGrouper(function, key);
         }
 
@@ -75,8 +74,7 @@ public class FunctionFormater {
         for (; end < function.length(); end++) {
             if (function.charAt(end) == '/' || function.charAt(end) == '*') {
                 if(pass){
-                    function = function.substring(0, 1) + "(" + function.substring(1, end) + ")" + function.substring(end);
-                    function = parenthesisCollapser(function, key);
+                    function = function.substring(0, 1) + key.addFunction(function.substring(1, end)) + function.substring(end);
                     return parenthesisGrouper(function, key);
                 }
                 pass=true;
@@ -108,7 +106,7 @@ public class FunctionFormater {
 
                 if(end!=0)
                     return parenthesisCollapser(function.substring(0, start)
-                            + key.addFunction(function.substring(start+1, end))
+                            + key.addFunction(parenthesisGrouper(function.substring(start, end), key))
                             + function.substring(end+1), key);
             }
 
@@ -175,10 +173,12 @@ public class FunctionFormater {
      * @param function the function to have '|'s added in where appropriate.
      * @return the function with '|'s added in.
      */
-    private static String preOperationsFlag(String function){
+    public static String preOperationsFlag(String function){
         function = function.replaceAll("\\^", "|^");
         function = function.replaceAll("\\*", "|*");
         function = function.replaceAll("/", "|/");
+        function = function.replaceAll("\\+","|+");
+        function = function.replaceAll("-","|-");
 
         return function;
     }
@@ -189,10 +189,12 @@ public class FunctionFormater {
      * @param function the function with the '|'s moved to the front.
      * @return the function with '|'s moved behind each '^', '*', '/'.
      */
-    private static String postOperationsFlag(String function){
+    public static String postOperationsFlag(String function){
         function = function.replaceAll("\\|\\^", "^|");
         function = function.replaceAll("\\|\\*", "*|");
         function = function.replaceAll("\\|/", "/|");
+        function = function.replaceAll("\\|\\+","+|");
+        function = function.replaceAll("\\|-","-|");
 
         return function;
     }
