@@ -34,7 +34,7 @@ public class FunctionSimplifier {
             return function;
         }
 
-        if(key.containsKey(pieces[0])){ //left is a key for a function: Case 1
+        if(key.containsKey(pieces[0]) && key.containsKey(pieces[1])){ //left and right is a key for a function: Case 1
             switch(getType(function)){
                 case MULT: return FunctionFormater.postOperationsFlag(function);
                 case DIVI: return FunctionFormater.postOperationsFlag(function);
@@ -43,7 +43,7 @@ public class FunctionSimplifier {
                 case SUB: return FunctionFormater.postOperationsFlag(function);
             }
         }
-        else if(key.containsKey(pieces[1])){ //right is a key for a function: Case 2
+        else if(key.containsKey(pieces[0])){ //left is a key for a function: Case 2
             switch(getType(function)){
                 case MULT: return FunctionFormater.postOperationsFlag(function);
                 case DIVI: return FunctionFormater.postOperationsFlag(function);
@@ -52,7 +52,7 @@ public class FunctionSimplifier {
                 case SUB: return FunctionFormater.postOperationsFlag(function);
             }
         }
-        else if(key.containsKey(pieces[0]) && key.containsKey(pieces[1])){ //left and right is a key for a function: Case 3
+        else if(key.containsKey(pieces[1])){ //right is a key for a function: Case 3
             switch(getType(function)){
                 case MULT: return FunctionFormater.postOperationsFlag(function);
                 case DIVI: return FunctionFormater.postOperationsFlag(function);
@@ -63,41 +63,57 @@ public class FunctionSimplifier {
         }
         else{ //neither left or right are keys for a function: Case 4
             switch(getType(function)){
-                case MULT: //return FunctionFormater.postOperationsFlag(multiplyCase4(pieces[0], pieces[1]));
+                case MULT: return FunctionFormater.postOperationsFlag(multiplyCase4(pieces[0], pieces[1]));
                 case DIVI: return FunctionFormater.postOperationsFlag(function);
-                case EXPO: return FunctionFormater.postOperationsFlag(function);
+                case EXPO: return FunctionFormater.postOperationsFlag(exponentCase4(pieces[0], pieces[1]));
                 case ADD: return FunctionFormater.postOperationsFlag(function);
                 case SUB: return FunctionFormater.postOperationsFlag(function);
             }
         }
 
-        return getType(function).toString();
+        return function;
     }
 
     /**
      * Multiplies the function out if possible.
+     * Used if, and only if, left and right are only numbers.
      * @param left
      * @param right
      * @return
      */
     public static String multiplyCase4(String left, String right){
-        String leftDegree = getDegree(left);
-        String rightDegree = getDegree(right);
 
-        if(leftDegree.equals(rightDegree)){
-            if(leftDegree == "1")
-                return (Double.parseDouble(stringToDouble(left))*Double.parseDouble(stringToDouble(right)))+"";
-            else
-                return (Double.parseDouble(stringToDouble(left))*Double.parseDouble(stringToDouble(right)))+"^|"+leftDegree;
+        if(left.contains("x") && right.contains("x")){
+            return (stringToDouble(left)*stringToDouble(right))+"x^|2";
         }
+        else if(left.contains("x") || right.contains("x")){
+            return (stringToDouble(left)*stringToDouble(right))+"x";
+        }
+        else{
+            return Double.toString(stringToDouble(left)*stringToDouble(right));
+        }
+    }
 
-        return left+"*|"+right;
+    /**
+     *
+     * @param left
+     * @param right
+     * @return
+     */
+    public static String exponentCase4(String left, String right){
+        if(left.contains("x") || right.contains("x")){
+            return left+"^|"+right;
+        }
+        else {
+            return Double.toString(Math.pow(stringToDouble(left), stringToDouble(right)));
+        }
     }
 
     /**
      * Gets the degree of a variable.
      * @param function the function you want the degree of.
      * @return the degree of the function.
+     * TODO functionality is kinda wonky, might need to be reworked completely.
      */
     private static String getDegree(String function){
 
@@ -129,7 +145,7 @@ public class FunctionSimplifier {
      * @param function the function to have all non-numbers removed.
      * @return the function with the all the non-numbers removed and only the numbers not in a exponent.
      */
-    private static String stringToDouble(String function){
+    private static double stringToDouble(String function){
         String toDouble = "";
 
         if(function.matches(".*\\d+.*")) { //checks if the function has any number in it at all
@@ -141,7 +157,7 @@ public class FunctionSimplifier {
                     break;
                 }
             }
-            return toDouble;
+            return Double.parseDouble(toDouble);
         }
         else {
             throw new IllegalArgumentException("Only characters");

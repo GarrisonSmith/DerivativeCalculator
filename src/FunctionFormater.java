@@ -11,7 +11,9 @@ public class FunctionFormater {
      * @return the function now formatted and condensed.
      */
     public static String condense(String function, FunctionKey key){
-        function=function.replace(" ", "");
+        function=function.replaceAll(" ", "");
+        function=function.replaceAll("\\|", "");
+        function=function.replaceAll("X", "x");
         function=parenthesisCollapser(function, key);
 
         return function;
@@ -27,17 +29,19 @@ public class FunctionFormater {
     public static String[] partsSplitter(String function){
         String c="", temp[];
 
+
         if(function.charAt(0)=='+' || function.charAt(0)=='-') {
             c+=function.charAt(0);
             function = function.substring(1);
         }
+
 
         if(function.contains("+") || function.contains("-")) {
             function = function.replace("+", " +");
             function = function.replace("-", " -");
             temp=function.split(" ");
             temp[0]=c+temp[0];
-            if(temp[0].charAt(0) != '+' && temp[0].charAt(0) != '-')
+          if(temp[0].charAt(0) != '+' && temp[0].charAt(0) != '-')
                 temp[0]="+"+temp[0];
             return temp;
         }
@@ -61,7 +65,7 @@ public class FunctionFormater {
                 if(function.charAt(end) == '/' || function.charAt(end) == '*' || function.charAt(end) == '^')
                     break;
             }
-            for(start--; start > 0; start--){
+            for(start--; start >= 0; start--){
                 if(function.charAt(start) == '/' || function.charAt(start) == '*' || function.charAt(start) == '^')
                     break;
             }
@@ -106,7 +110,7 @@ public class FunctionFormater {
 
                 if(end!=0)
                     return parenthesisCollapser(function.substring(0, start)
-                            + key.addFunction(parenthesisGrouper(function.substring(start, end), key))
+                            + key.addFunction(parenthesisGrouper(function.substring(start+1, end), key))
                             + function.substring(end+1), key);
             }
 

@@ -100,21 +100,32 @@ public class Function {
     }
 
     /**
-     *
+     * Simplifies the function keys down in key.
      */
     private void simplify(){
        FunctionSimplifier.simplify(key);
+       for(int x=0; x<parts.length; x++){
+           parts[x] = FunctionSimplifier.simplify(parts[x], key);
+       }
     }
 
     /**
      * Does all needed formatting for the function, also gets parts.
+     * TODO Figure out why x != 0 in the if statement, probably covered the case somewhere else and forgot?.
      */
     private void formatInput(){
+        String temp="";
+
         current=FunctionFormater.condense(current, key);
         try {
             parts = FunctionFormater.partsSplitter(current);
             for(int x=0; x<parts.length; x++) {
+                if((parts[x].charAt(0) == '+' || parts[x].charAt(0) == '-') && x != 0){
+                    temp += parts[x].charAt(0);
+                    parts[x] = parts[x].substring(1);
+                }
                 parts[x] = FunctionFormater.parenthesisGrouper(parts[x], key);
+                parts[x] = temp+parts[x];
             }
             formatKey();
         }
@@ -135,10 +146,13 @@ public class Function {
      */
     private void constructParts(){
         String temp="";
-        for(String i : parts){
-            temp+=i;
+        try {
+            for (String i : parts) {
+                temp += i;
+            }
+            current=temp;
         }
-        current=temp;
+        catch(NullPointerException e){}
     }
 
     /**
@@ -153,9 +167,12 @@ public class Function {
         System.out.print("Key: ");
         key.print();
         System.out.println("\nParts: ");
-        for(String i : parts){
-            System.out.println(i);
+        try {
+            for (String i : parts) {
+                System.out.println(i);
+            }
         }
+        catch (NullPointerException e){}
         System.out.println( "Function Expanded\n" +
                 FunctionFormater.functionKeyExpander(current, key).replace("|", ""));
     }
