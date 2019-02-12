@@ -89,11 +89,10 @@ public class Function {
         stages.add("Input Function: "); stages.add(input);
         formatInput();
         stages.add("Function after Formatting: "); stages.add(current);
+        //simplify();
+        stages.add("Key now simplified");
         constructParts();
         stages.add("Function after being assembled from parts: "); stages.add(current);
-        key.print();
-        simplify();
-        stages.add("Key now simplified");
 
 
         return null;
@@ -103,42 +102,51 @@ public class Function {
      * Simplifies the function keys down in key.
      */
     private void simplify(){
-       FunctionSimplifier.simplify(key);
-       for(int x=0; x<parts.length; x++){
-           parts[x] = FunctionSimplifier.simplify(parts[x], key);
+        String foo = "";
+
+       FunctionSimplifier.simplify(key, true);
+       try {
+           for (int x = 0; x < parts.length; x++) {
+               if (parts[x].charAt(0) == '-' || parts[x].charAt(0) == '+') {
+                   foo += parts[x].charAt(0);
+                   parts[x] = parts[x].substring(1);
+               }
+               parts[x] = FunctionSimplifier.simplify(parts[x], key);
+               parts[x] = foo + parts[x];
+               foo = "";
+           }
        }
+       catch(NullPointerException e){}
     }
 
     /**
      * Does all needed formatting for the function, also gets parts.
-     * TODO Figure out why x != 0 in the if statement, probably covered the case somewhere else and forgot?.
      */
-    private void formatInput(){
-        String temp="";
+    private void formatInput() {
+        String foo = "";
 
-        current=FunctionFormater.condense(current, key);
+        current = FunctionFormater.condense(current, key);
         try {
             parts = FunctionFormater.partsSplitter(current);
-            for(int x=0; x<parts.length; x++) {
-                if((parts[x].charAt(0) == '+' || parts[x].charAt(0) == '-') && x != 0){
-                    temp += parts[x].charAt(0);
-                    parts[x] = parts[x].substring(1);
-                }
-                parts[x] = FunctionFormater.parenthesisGrouper(parts[x], key);
-                parts[x] = temp+parts[x];
-            }
-            formatKey();
+        } catch (IllegalArgumentException NoParts) {
+            parts = new String[1];
+            current = FunctionFormater.parenthesisGrouper(current, key);
+            parts[0] = key.addFunction(current);
         }
-        catch(IllegalArgumentException NoParts){}
-    }
 
-    /**
-     * Formats each element in the key for simplification.
-     */
-    private void formatKey(){
-       for(int x=0; x<key.length(); x++){
-            key.setFunction(FunctionFormater.preOperationsFlag(key.getElement(x)[1]), x);
-       }
+        for (int x = 0; x < parts.length; x++) {
+            if ((parts[x].charAt(0) == '+' || parts[x].charAt(0) == '-')) {
+                foo += parts[x].charAt(0);
+                parts[x] = parts[x].substring(1);
+            } else if ((parts[x].charAt(0) == '|')) {
+                foo += parts[x].substring(0, 2);
+                parts[x] = parts[x].substring(2);
+            }
+            parts[x] = FunctionFormater.parenthesisGrouper(parts[x], key);
+            parts[x] = key.addFunction(parts[x]);
+            parts[x] = foo + parts[x];
+            foo = "";
+        }
     }
 
     /**
@@ -159,7 +167,7 @@ public class Function {
      * Prints the process for testing.
      */
     public void showSteps(){
-        System.out.println("\n\n----Stages----");
+        System.out.println("----Stages----");
         for(String i : stages) {
             System.out.println(i);
         }
@@ -174,6 +182,6 @@ public class Function {
         }
         catch (NullPointerException e){}
         System.out.println( "Function Expanded\n" +
-                FunctionFormater.functionKeyExpander(current, key).replace("|", ""));
+                FunctionFormater.cleanUp(FunctionFormater.functionKeyExpander(current, key).replace("|", "")));
     }
 }

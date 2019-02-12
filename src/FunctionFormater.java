@@ -14,7 +14,22 @@ public class FunctionFormater {
         function=function.replaceAll(" ", "");
         function=function.replaceAll("\\|", "");
         function=function.replaceAll("X", "x");
+        function=preOperationsFlag(function);
         function=parenthesisCollapser(function, key);
+
+        return function;
+    }
+
+    /**
+     * Formats the function after having everything done.
+     * @param function the function to cleaned up.
+     * @return the function after being cleaned up.
+     */
+    public static String cleanUp(String function){
+        function=function.replaceAll("\\+\\+", "+");
+        function=function.replaceAll("--", "-");
+        function=function.replaceAll("-\\+", "-");
+        function=function.replaceAll("\\+-", "-");
 
         return function;
     }
@@ -27,23 +42,19 @@ public class FunctionFormater {
      * @throws IllegalArgumentException if no parts can be derived from the function.
      */
     public static String[] partsSplitter(String function){
-        String c="", temp[];
-
-
-        if(function.charAt(0)=='+' || function.charAt(0)=='-') {
-            c+=function.charAt(0);
-            function = function.substring(1);
-        }
-
+        String[] foo;
 
         if(function.contains("+") || function.contains("-")) {
             function = function.replace("+", " +");
-            function = function.replace("-", " -");
-            temp=function.split(" ");
-            temp[0]=c+temp[0];
-          if(temp[0].charAt(0) != '+' && temp[0].charAt(0) != '-')
-                temp[0]="+"+temp[0];
-            return temp;
+            function = function.replace("|-", " |-");
+
+            if(function.charAt(0) == ' '){
+                function = function.substring(1);
+            }
+
+            foo=function.split(" ");
+
+            return foo;
         }
         throw new IllegalArgumentException("Function has no parts: "+function);
     }
@@ -55,22 +66,27 @@ public class FunctionFormater {
      * @return the function now condensed down as much as possible.
      */
     public static String parenthesisGrouper(String function, FunctionKey key) {
-        int end=1;
+        int current, end=1;
         boolean pass=false;
 
         if(function.contains("^")){
-            int start = end = function.lastIndexOf('^');
+            int start = current = end = function.lastIndexOf('^');
 
-            for(end++; end < function.length(); end++){
-                if(function.charAt(end) == '/' || function.charAt(end) == '*' || function.charAt(end) == '^')
+            for(; end < function.length(); end++){
+                if((function.charAt(end) == '/' || function.charAt(end) == '*' || function.charAt(end) == '^') && end != current)
                     break;
             }
-            for(start--; start >= 0; start--){
-                if(function.charAt(start) == '/' || function.charAt(start) == '*' || function.charAt(start) == '^')
+            for(; start >= 0; start--){
+                if((function.charAt(start) == '/' || function.charAt(start) == '*' || function.charAt(start) == '^') && start != current)
                     break;
+            }
+
+            if (function.charAt(end - 1) == '|'){
+                end--;
             }
 
             function = function.substring(0, start+1) + key.addFunction(function.substring(start+1, end))+ function.substring(end);
+
             return parenthesisGrouper(function, key);
         }
 
@@ -78,7 +94,13 @@ public class FunctionFormater {
         for (; end < function.length(); end++) {
             if (function.charAt(end) == '/' || function.charAt(end) == '*') {
                 if(pass){
-                    function = function.substring(0, 1) + key.addFunction(function.substring(1, end)) + function.substring(end);
+
+                    if (function.charAt(end - 1) == '|') {
+                        end--;
+                    }
+
+                    function = key.addFunction(function.substring(0, end)) + function.substring(end);
+
                     return parenthesisGrouper(function, key);
                 }
                 pass=true;
@@ -137,7 +159,7 @@ public class FunctionFormater {
 
                 if(end!=0)
                     return functionKeyExpander(function.substring(0, start)
-                            + "(" +key.getFunction(function.substring(start, end+1)) + ")"
+                            + "" +key.getFunction(function.substring(start, end+1)) + ""
                             + function.substring(end+1), key);
             }
 
@@ -178,11 +200,27 @@ public class FunctionFormater {
      * @return the function with '|'s added in.
      */
     public static String preOperationsFlag(String function){
+
+        //Chunk used to define the difference between subtraction and a negative.
+        //Subtraction Here
+        function = function.replaceAll("-", "- ");
+        function = function.replace(")- ", ")|-");
+        function = function.replace("0- ", "0|-");
+        function = function.replace("1- ", "1|-");
+        function = function.replace("2- ", "2|-");
+        function = function.replace("3- ", "3|-");
+        function = function.replace("4- ", "4|-");
+        function = function.replace("5- ", "5|-");
+        function = function.replace("6- ", "6|-");
+        function = function.replace("7- ", "7|-");
+        function = function.replace("8- ", "8|-");
+        function = function.replace("9- ", "9|-");
+        function = function.replaceAll(" ", "");
+
         function = function.replaceAll("\\^", "|^");
         function = function.replaceAll("\\*", "|*");
         function = function.replaceAll("/", "|/");
         function = function.replaceAll("\\+","|+");
-        function = function.replaceAll("-","|-");
 
         return function;
     }
@@ -194,11 +232,12 @@ public class FunctionFormater {
      * @return the function with '|'s moved behind each '^', '*', '/'.
      */
     public static String postOperationsFlag(String function){
+
         function = function.replaceAll("\\|\\^", "^|");
         function = function.replaceAll("\\|\\*", "*|");
         function = function.replaceAll("\\|/", "/|");
-        function = function.replaceAll("\\|\\+","+|");
-        function = function.replaceAll("\\|-","-|");
+        function = function.replaceAll("\\|\\+", "+|");
+        function = function.replaceAll("\\|-", "-|");
 
         return function;
     }
