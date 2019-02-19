@@ -1,7 +1,10 @@
 package DerivativeCalculator;
 
-import java.util.InputMismatchException;
-
+/**
+ * Doubly Linked List of FunctionNodes used to contain all info need to calculate the derivative.
+ *
+ * @author Garrison Smith
+ */
 public class FunctionKeyList {
 
     /**
@@ -12,7 +15,7 @@ public class FunctionKeyList {
     /**
      * Tracks the length of the list.
      */
-    int length;
+    private int length;
 
     /**
      * The char that will be used in the keys.
@@ -43,7 +46,37 @@ public class FunctionKeyList {
      * Adds a new function to the list.
      *
      * @param function the function being added.
+     * @param grouped  determines if the function needs to be grouped or not.
      * @return the function key corresponding with the given function.
+     */
+    public String addFunction(String function, boolean grouped) {
+        if (head.getFunction() == null) {
+            head.setFunction(function, grouped);
+            head.setFunctionKey(keyGenerator());
+            head.setIndex(length);
+            tail = head;
+            length++;
+        } else if (containsFunction(function) != null) {
+            //do nothing
+        } else if (containsKey(function)) {
+            return function;
+        } else {
+            FunctionNode foo = new FunctionNode(function, keyGenerator(), grouped);
+            foo.setIndex(length);
+            tail.setNext(foo);
+            foo.setPrev(tail);
+            tail = foo;
+            length++;
+        }
+        return getFunctionKey(function);
+    }
+
+    /**
+     * Adds a new function to the list.
+     *
+     * @param function the function being added.
+     * @return the function key corresponding
+     * with the given function.
      */
     public String addFunction(String function) {
         if (head.getFunction() == null) {
@@ -54,6 +87,8 @@ public class FunctionKeyList {
             length++;
         } else if (containsFunction(function) != null) {
             //do nothing
+        } else if (containsKey(function)) {
+            return function;
         } else {
             FunctionNode foo = new FunctionNode(function, keyGenerator());
             foo.setIndex(length);
@@ -479,7 +514,7 @@ public class FunctionKeyList {
     /**
      * Used to contain everything for each element inside of a FunctionKey.
      *
-     * @author Garrison Smith 2/11/2019
+     * @author Garrison Smith
      */
     public class FunctionNode {
         /**
@@ -520,13 +555,13 @@ public class FunctionKeyList {
         public FunctionNode(FunctionNode prev, String function, String functionKey, boolean grouped) {
             next = null;
             this.prev = prev;
-            //data = new String[5];
             data[0] = function;
-            data[5] = functionKey;
+            data[4] = functionKey;
             index = prev.getIndex() + 1;
             this.grouped = new boolean[4];
             this.grouped[0] = grouped;
             types = new FunctionType[5];
+            upDataType();
         }
 
         /**
@@ -539,13 +574,13 @@ public class FunctionKeyList {
         public FunctionNode(FunctionNode prev, String function, String functionKey) {
             next = null;
             this.prev = prev;
-            //data = new String[5];
             data[0] = function;
-            data[5] = functionKey;
+            data[4] = functionKey;
             index = prev.getIndex() + 1;
             this.grouped = new boolean[4];
-            this.grouped[0] = true;
+            this.grouped[0] = false;
             types = new FunctionType[5];
+            upDataType();
         }
 
         /**
@@ -557,13 +592,13 @@ public class FunctionKeyList {
          */
         public FunctionNode(String function, String functionKey, boolean grouped) {
             next = prev = null;
-            //data = new String[5];
             data[0] = function;
-            data[5] = functionKey;
+            data[4] = functionKey;
             this.index = 0;
             this.grouped = new boolean[4];
             this.grouped[0] = grouped;
             types = new FunctionType[5];
+            upDataType();
         }
 
         /**
@@ -574,13 +609,13 @@ public class FunctionKeyList {
          */
         public FunctionNode(String function, String functionKey) {
             next = prev = null;
-            //data = new String[5];
             data[0] = function;
             data[4] = functionKey;
             this.index = 0;
             this.grouped = new boolean[4];
-            this.grouped[0] = true;
+            this.grouped[0] = false;
             types = new FunctionType[5];
+            upDataType();
         }
 
         /**
@@ -588,11 +623,9 @@ public class FunctionKeyList {
          */
         public FunctionNode() {
             next = prev = null;
-            //data = new String[5];
-            //data[4] = null;
             this.index = 0;
             this.grouped = new boolean[4];
-            this.grouped[0] = true;
+            this.grouped[0] = false;
             types = new FunctionType[5];
         }
 
@@ -693,6 +726,16 @@ public class FunctionKeyList {
         }
 
         /**
+         * Gets the function type corresponding to the given index.
+         *
+         * @param index the index to returned.
+         * @return the function type at the given index.
+         */
+        public FunctionType getTypes(int index) {
+            return types[index];
+        }
+
+        /**
          * Sets this FunctionNodes previous FunctionNode in a list.
          *
          * @param prev the previous FunctionNode in the list.
@@ -721,6 +764,7 @@ public class FunctionKeyList {
         public void setFunction(String function, boolean grouped) {
             data[0] = function;
             this.grouped[0] = grouped;
+            upDataType();
         }
 
         /**
@@ -731,6 +775,7 @@ public class FunctionKeyList {
         public void setFunction(String function) {
             data[0] = function;
             grouped[0] = true;
+            upDataType();
         }
 
         /**
@@ -892,11 +937,30 @@ public class FunctionKeyList {
         }
 
         /**
+         * Updates all types to accurately reflect their corresponding functions/derivatives.
+         */
+        public void upDataType() {
+            for (int x = 0; x <= 3; x++) {
+                try {
+                    types[x] = FunctionSimplifier.getFunctionType(data[x]);
+                    if (types[x] == FunctionType.EXPO) {
+                        grouped[x] = true;
+                    } else if (types[x] == FunctionType.NONE) {
+                        grouped[x] = false;
+                    }
+                } catch (NullPointerException e) {
+                    //do nothing
+                }
+            }
+        }
+
+        /**
          * Prints out all info in the FunctionNode.
          */
         public void print() {
-            System.out.print("Index[" + index + "]:{" + data[4] + "}{" + data[0] + " " + grouped[0] + "}{" +
-                    data[1] + " " + grouped[1] + "}{" + data[2] + " " + grouped[2] + "}{" + data[3] + " " + grouped[3] + "}\n");
+            System.out.print("Index[" + index + "]:{" + data[4] + "}{" + data[0] + ", " + types[0] + ", " + grouped[0] + "}{" +
+                    data[1] + ", " + types[1] + ", " + grouped[1] + "}{" + data[2] + ", " + types[2] + ", " + grouped[2] + "}{" +
+                    data[3] + ", " + types[3] + ", " + grouped[3] + "}\n");
         }
     }
 }

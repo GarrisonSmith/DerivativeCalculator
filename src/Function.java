@@ -6,7 +6,7 @@ public class Function {
     /**
      * Function key for contains condensed pieces of the function.
      */
-    private FunctionKey key;
+    private FunctionKeyList key;
 
     /**
      * String array for containing the parts of the function, split by the
@@ -35,7 +35,7 @@ public class Function {
      */
     public Function(String function){
         input=current=function;
-        key=new FunctionKey();
+        key=new FunctionKeyList();
         type = 'i';
     }
 
@@ -46,7 +46,7 @@ public class Function {
      */
     public Function(String function, char type){
         input=current=function;
-        key=new FunctionKey(type);
+        key=new FunctionKeyList(type);
         this.type = type;
     }
 
@@ -55,7 +55,7 @@ public class Function {
      * @param function the input function.
      * @param key the key to be used when referencing function keys.
      */
-    public Function(String function, FunctionKey key){
+    public Function(String function, FunctionKeyList key){
         input=current=function;
         this.key=key;
     }
@@ -89,7 +89,7 @@ public class Function {
         stages.add("Input Function: "); stages.add(input);
         formatInput();
         stages.add("Function after Formatting: "); stages.add(current);
-        //simplify();
+        simplifyFunction();
         stages.add("Key now simplified");
         constructParts();
         stages.add("Function after being assembled from parts: "); stages.add(current);
@@ -101,22 +101,8 @@ public class Function {
     /**
      * Simplifies the function keys down in key.
      */
-    private void simplify(){
-        String foo = "";
-
-       FunctionSimplifier.simplify(key, true);
-       try {
-           for (int x = 0; x < parts.length; x++) {
-               if (parts[x].charAt(0) == '-' || parts[x].charAt(0) == '+') {
-                   foo += parts[x].charAt(0);
-                   parts[x] = parts[x].substring(1);
-               }
-               parts[x] = FunctionSimplifier.simplify(parts[x], key);
-               parts[x] = foo + parts[x];
-               foo = "";
-           }
-       }
-       catch(NullPointerException e){}
+    private void simplifyFunction(){
+       FunctionSimplifier.simplifyFunction(key);
     }
 
     /**
@@ -172,7 +158,7 @@ public class Function {
             System.out.println(i);
         }
         System.out.println("-----End-----");
-        System.out.print("Key: ");
+        System.out.print("Key: \n");
         key.print();
         System.out.println("\nParts: ");
         try {
