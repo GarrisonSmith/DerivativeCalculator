@@ -3,7 +3,7 @@ package DerivativeCalculator;
 public class FunctionFormater {
 
     /**
-     * Formats the function down to the pieces need for the calculator.
+     * Formats the function down to the pieces needed for the calculator.
      *
      * @param function the function to be formatted.
      * @param key      the key to be used when condensing the function.
@@ -30,6 +30,7 @@ public class FunctionFormater {
         function = function.replaceAll("--", "");
         function = function.replaceAll("-\\+", "-");
         function = function.replaceAll("\\+-", "-");
+        function = function.replaceAll("\\|", "");
 
         return function;
     }

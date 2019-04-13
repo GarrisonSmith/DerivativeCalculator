@@ -48,19 +48,19 @@ public class FunctionSimplifier {
 
             switch (getFunctionType(function)) {
                 case MULT:
-                    key.setSimplifiedFunction(x, (multiply(pieces[0], pieces[1])));
+                    key.setSimplifiedFunction(x, FunctionFormater.cleanUp(multiply(pieces[0], pieces[1])));
                     break;
                 case DIVI:
-                    key.setSimplifiedFunction(x, (divide(pieces[0], pieces[1])));
+                    key.setSimplifiedFunction(x, FunctionFormater.cleanUp((divide(pieces[0], pieces[1]))));
                     break;
                 case EXPO:
-                    key.setSimplifiedFunction(x, (exponent(pieces[0], pieces[1])));
+                    key.setSimplifiedFunction(x, FunctionFormater.cleanUp((exponent(pieces[0], pieces[1]))));
                     break;
                 case ADD:
-                    key.setSimplifiedFunction(x, (add(pieces[0], pieces[1])));
+                    key.setSimplifiedFunction(x, FunctionFormater.cleanUp((add(pieces[0], pieces[1]))));
                     break;
                 case SUB:
-                    key.setSimplifiedFunction(x, (subtract(pieces[0], pieces[1])));
+                    key.setSimplifiedFunction(x, FunctionFormater.cleanUp((subtract(pieces[0], pieces[1]))));
                     break;
             }
 

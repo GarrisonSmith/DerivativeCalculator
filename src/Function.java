@@ -3,6 +3,7 @@ package DerivativeCalculator;
 import java.util.ArrayList;
 
 public class Function {
+
     /**
      * Function key for contains condensed pieces of the function.
      */
@@ -93,7 +94,7 @@ public class Function {
         stages.add("Key now simplified");
         constructParts();
         stages.add("Function after being assembled from parts: "); stages.add(current);
-
+        DerivativeRuleDeterminer.applyRule(key);
 
         return null;
     }
@@ -136,7 +137,7 @@ public class Function {
     }
 
     /**
-     * Constructs the function from parts and keys.
+     * Constructs the function from parts and keys and then cleans it up.
      */
     private void constructParts(){
         String temp="";
@@ -147,6 +148,8 @@ public class Function {
             current=temp;
         }
         catch(NullPointerException e){}
+
+        current = FunctionFormater.cleanUp(FunctionFormater.functionKeyExpander(current, key));
     }
 
     /**
@@ -167,7 +170,6 @@ public class Function {
             }
         }
         catch (NullPointerException e){}
-        System.out.println( "Function Expanded\n" +
-                FunctionFormater.cleanUp(FunctionFormater.functionKeyExpander(current, key).replace("|", "")));
+        System.out.println( "Function Expanded\n" + current);
     }
 }
