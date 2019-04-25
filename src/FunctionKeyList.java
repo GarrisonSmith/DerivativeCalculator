@@ -2,7 +2,6 @@ package DerivativeCalculator;
 
 /**
  * Doubly Linked List of FunctionNodes used to contain all info need to calculate the derivative.
- *
  * @author Garrison Smith
  */
 public class FunctionKeyList {
@@ -24,7 +23,6 @@ public class FunctionKeyList {
 
     /**
      * Creates a new FunctionKey.
-     *
      * @param keyType the char used in the function keys.
      */
     public FunctionKeyList(char keyType) {
@@ -44,7 +42,6 @@ public class FunctionKeyList {
 
     /**
      * Adds a new function to the list.
-     *
      * @param function the function being added.
      * @param grouped  determines if the function needs to be grouped or not.
      * @return the function key corresponding with the given function.
@@ -56,11 +53,14 @@ public class FunctionKeyList {
             head.setIndex(length);
             tail = head;
             length++;
-        } else if (containsFunction(function) != null) {
+        }
+        else if (containsFunction(function) != null) {
             //do nothing
-        } else if (containsKey(function)) {
+        }
+        else if (containsKey(function)) {
             return function;
-        } else {
+        }
+        else {
             FunctionNode foo = new FunctionNode(function, keyGenerator(), grouped);
             foo.setIndex(length);
             tail.setNext(foo);
@@ -73,7 +73,6 @@ public class FunctionKeyList {
 
     /**
      * Adds a new function to the list.
-     *
      * @param function the function being added.
      * @return the function key corresponding
      * with the given function.
@@ -85,11 +84,14 @@ public class FunctionKeyList {
             head.setIndex(length);
             tail = head;
             length++;
-        } else if (containsFunction(function) != null) {
+        }
+        else if (containsFunction(function) != null) {
             //do nothing
-        } else if (containsKey(function)) {
+        }
+        else if (containsKey(function)) {
             return function;
-        } else {
+        }
+        else {
             FunctionNode foo = new FunctionNode(function, keyGenerator());
             foo.setIndex(length);
             tail.setNext(foo);
@@ -102,7 +104,6 @@ public class FunctionKeyList {
 
     /**
      * Generates a new key for a new function.
-     *
      * @return the key representing the function.
      */
     private String keyGenerator() {
@@ -117,7 +118,6 @@ public class FunctionKeyList {
 
     /**
      * Checks whether the function key list contains the given function or not.
-     *
      * @param function the function to be checked.
      * @return if the function key list already contains the function returns the
      * corresponding function key, null if not.
@@ -133,7 +133,6 @@ public class FunctionKeyList {
 
     /**
      * Check whether the function key list contains the given key or not.
-     *
      * @param functionKey the key to be checked.
      * @return true if the key is found, false if it is not.
      */
@@ -157,7 +156,6 @@ public class FunctionKeyList {
 
     /**
      * Gets the first function node in the list.
-     *
      * @return the first function node in the list.
      */
     public FunctionNode getHead() {
@@ -166,19 +164,20 @@ public class FunctionKeyList {
 
     /**
      * Gets the FunctionNode with the given function key.
-     *
      * @param functionKey the function key to be found.
      * @return the FunctionNode with the given function key.
      * @throws IllegalArgumentException when the given function key is invalid.
      */
     public FunctionNode getNode(String functionKey) {
+
         FunctionNode current = head;
 
         try {
-            while (!current.getFunctionKey().equals(functionKey)) {
+            while (!(current.getFunctionKey().equals(functionKey))) {
                 current = current.getNext();
             }
-        } catch (NullPointerException e) {
+        }
+        catch (NullPointerException e) {
             throw new IllegalArgumentException("Unknown function key: " + functionKey);
         }
         return current;
@@ -186,7 +185,6 @@ public class FunctionKeyList {
 
     /**
      * Gets the FunctionNode with the given function.
-     *
      * @param function the function to be found.
      * @return the FunctionNode with the given function key.
      * @throws IllegalArgumentException when the given function is not valid.
@@ -195,10 +193,31 @@ public class FunctionKeyList {
         FunctionNode current = head;
 
         try {
-            while (!current.getFunction().equals(function)) {
+            while (!FunctionFormater.cleanUp(current.getFunction()).equals(FunctionFormater.cleanUp(function))) {
                 current = current.getNext();
             }
-        } catch (NullPointerException e) {
+        }
+        catch (NullPointerException e) {
+            throw new IllegalArgumentException("Unknown function: " + function);
+        }
+        return current;
+    }
+
+    /**
+     * Gets the FunctionNode with the given simplified function.
+     * @param function the function to be found.
+     * @return the FunctionNode with the given function key.
+     * @throws IllegalArgumentException when the given function is not valid.
+     */
+    public FunctionNode getNodeFromSimplifiedFunction(String function) {
+        FunctionNode current = head;
+
+        try {
+            while (!FunctionFormater.cleanUp(current.getSimplifiedFunction()).equals(FunctionFormater.cleanUp(function))) {
+                current = current.getNext();
+            }
+        }
+        catch (NullPointerException e) {
             throw new IllegalArgumentException("Unknown function: " + function);
         }
         return current;
@@ -206,7 +225,6 @@ public class FunctionKeyList {
 
     /**
      * Gets the FunctionNode with the given index.
-     *
      * @param index the index to be found.
      * @return the FunctionNode with the given index.
      * @throws IndexOutOfBoundsException when the given index is not valid.
@@ -218,7 +236,8 @@ public class FunctionKeyList {
             while (current.getIndex() != index) {
                 current = current.getNext();
             }
-        } catch (NullPointerException e) {
+        }
+        catch (NullPointerException e) {
             throw new IndexOutOfBoundsException("Invalid Index: " + index);
         }
         return current;
@@ -226,7 +245,6 @@ public class FunctionKeyList {
 
     /**
      * Returns the current length of the list.
-     *
      * @return the length of the list.
      */
     public int getLength() {
@@ -235,7 +253,6 @@ public class FunctionKeyList {
 
     /**
      * Returns the function at the index.
-     *
      * @param functionKey the function key to get the function from.
      * @return the function from the index.
      */
@@ -245,7 +262,6 @@ public class FunctionKeyList {
 
     /**
      * Returns the function at the index.
-     *
      * @param index the index to get the function from.
      * @return the function from the index.
      */
@@ -255,7 +271,6 @@ public class FunctionKeyList {
 
     /**
      * Returns the simplified function at the index.
-     *
      * @param functionKey the function key to get the simplified function from.
      * @return the simplified function at the index.
      */
@@ -265,7 +280,6 @@ public class FunctionKeyList {
 
     /**
      * Returns the simplified function at the index.
-     *
      * @param index the index to get the simplified function from.
      * @return the simplified function at the index.
      */
@@ -275,7 +289,6 @@ public class FunctionKeyList {
 
     /**
      * Returns the derivative corresponding with the function key.
-     *
      * @param functionKey the function key to get the derivative from.
      * @return the derivative at the index.
      */
@@ -285,7 +298,6 @@ public class FunctionKeyList {
 
     /**
      * Returns the derivative at the index.
-     *
      * @param index the index to get the derivative from.
      * @return the derivative at the index.
      */
@@ -295,7 +307,6 @@ public class FunctionKeyList {
 
     /**
      * Returns the simplified derivative corresponding with the function key.
-     *
      * @param functionKey the function key to get the simplified derivative from.
      * @return the simplified derivative at the index.
      */
@@ -305,7 +316,6 @@ public class FunctionKeyList {
 
     /**
      * Returns the simplified derivative at the index.
-     *
      * @param index the index to get the simplified derivative from.
      * @return the simplified derivative at the index.
      */
@@ -315,7 +325,6 @@ public class FunctionKeyList {
 
     /**
      * Returns the function key corresponding with the given function.
-     *
      * @param function the function to get the function key from.
      * @return the function key at the index.
      */
@@ -325,7 +334,6 @@ public class FunctionKeyList {
 
     /**
      * Returns the function key at the index.
-     *
      * @param index the index to get the function key from.
      * @return the function key at the index.
      */
@@ -335,7 +343,6 @@ public class FunctionKeyList {
 
     /**
      * Sets the given function key's function to be the given function.
-     *
      * @param functionKey the function key to be set.
      * @param function    the simplified function to be set.
      * @param grouped     determines if the simplified derivative needs parenthesis or not.
@@ -346,7 +353,6 @@ public class FunctionKeyList {
 
     /**
      * Sets the given index's function to be the given function.
-     *
      * @param index    the index to be set.
      * @param function the function to be set.
      * @param grouped  determines if the function needs parenthesis or not.
@@ -357,7 +363,6 @@ public class FunctionKeyList {
 
     /**
      * Sets the given function key's function to be the given function.
-     *
      * @param functionKey to be set.
      * @param function    the function to be set.
      */
@@ -367,7 +372,6 @@ public class FunctionKeyList {
 
     /**
      * Sets the given index's function to be the given function.
-     *
      * @param index    the index to be set.
      * @param function the function to be set.
      */
@@ -377,7 +381,6 @@ public class FunctionKeyList {
 
     /**
      * Sets the given function key's simplified function to be the given function.
-     *
      * @param functionKey        the function key to be set.
      * @param simplifiedFunction the simplified function to be set.
      * @param grouped            determines if the simplified derivative needs parenthesis or not.
@@ -388,7 +391,6 @@ public class FunctionKeyList {
 
     /**
      * Sets the given index's simplified function to be the given function.
-     *
      * @param index              the index to be set.
      * @param simplifiedFunction the simplified function to be set.
      * @param grouped            determines if the simplified function needs parenthesis or not.
@@ -399,7 +401,6 @@ public class FunctionKeyList {
 
     /**
      * Sets the given function key's simplified function to be the given function.
-     *
      * @param functionKey        the function key to be set.
      * @param simplifiedFunction the simplified function to be set.
      */
@@ -409,7 +410,6 @@ public class FunctionKeyList {
 
     /**
      * Sets the given index's simplified function to be the given function.
-     *
      * @param index              the index to be set.
      * @param simplifiedFunction the simplified function to be set.
      */
@@ -419,7 +419,6 @@ public class FunctionKeyList {
 
     /**
      * Sets the given function key's derivative to be the given derivative.
-     *
      * @param functionKey the function key to be set.
      * @param derivative  the derivative to be set.
      * @param grouped     determines if the simplified derivative needs parenthesis or not.
@@ -430,7 +429,6 @@ public class FunctionKeyList {
 
     /**
      * Sets the given index's derivative to be the given derivative.
-     *
      * @param index      the index to be set.
      * @param derivative the derivative to be set.
      * @param grouped    determines if the derivative needs parenthesis or not.
@@ -441,7 +439,6 @@ public class FunctionKeyList {
 
     /**
      * Sets the given function key's derivative to be the given derivative.
-     *
      * @param functionKey the functionKey to be set.
      * @param derivative  the derivative to be set.
      */
@@ -451,7 +448,6 @@ public class FunctionKeyList {
 
     /**
      * Sets the given index's derivative to be the given derivative.
-     *
      * @param index      the index to be set.
      * @param derivative the derivative to be set.
      */
@@ -461,7 +457,6 @@ public class FunctionKeyList {
 
     /**
      * Sets the given function key's simplified derivative to be the given derivative.
-     *
      * @param functionKey          the function key to be set.
      * @param simplifiedDerivative the simplified derivative to be set.
      * @param grouped              determines if the simplified derivative needs parenthesis or not.
@@ -472,7 +467,6 @@ public class FunctionKeyList {
 
     /**
      * Sets the given index's simplified derivative to be the given derivative.
-     *
      * @param index                the index to be set.
      * @param simplifiedDerivative the simplified derivative to be set.
      * @param grouped              determines if the simplified derivative needs parenthesis or not.
@@ -483,7 +477,6 @@ public class FunctionKeyList {
 
     /**
      * Sets the given function key's simplified derivative to be the given derivative.
-     *
      * @param functionKey          the function key to be set.
      * @param simplifiedDerivative the simplified derivative to be set.
      */
@@ -493,7 +486,6 @@ public class FunctionKeyList {
 
     /**
      * Sets the given index's simplified derivative to be the given derivative.
-     *
      * @param index                the index to be set.
      * @param simplifiedDerivative the simplified derivative to be set.
      */
@@ -503,7 +495,6 @@ public class FunctionKeyList {
 
     /**
      * Sets the given index's function key to be the given key.
-     *
      * @param index       the index to be set.
      * @param functionKey the function key to be set.
      */
@@ -513,7 +504,6 @@ public class FunctionKeyList {
 
     /**
      * Used to contain everything for each element inside of a FunctionKey.
-     *
      * @author Garrison Smith
      */
     public class FunctionNode {
@@ -546,7 +536,6 @@ public class FunctionKeyList {
 
         /**
          * Used to create a new FunctionNode.
-         *
          * @param prev        sets the previous FunctionNode in the list.
          * @param function    sets the input function for this FunctionNode.
          * @param functionKey sets the key for the corresponding function.
@@ -561,12 +550,11 @@ public class FunctionKeyList {
             this.grouped = new boolean[4];
             this.grouped[0] = grouped;
             types = new FunctionType[5];
-            upDataType();
+            upDateDataType();
         }
 
         /**
          * Used to create a new FunctionNode.
-         *
          * @param prev        sets the previous FunctionNode in the list.
          * @param function    sets the input function for this FunctionNode.
          * @param functionKey sets the key for the corresponding function.
@@ -580,12 +568,11 @@ public class FunctionKeyList {
             this.grouped = new boolean[4];
             this.grouped[0] = false;
             types = new FunctionType[5];
-            upDataType();
+            upDateDataType();
         }
 
         /**
          * Used to create a new FunctionNode.
-         *
          * @param function    sets the input function for this FunctionNode.
          * @param grouped     sets whether the input function should be grouped or not.
          * @param functionKey sets the key for the corresponding function.
@@ -598,12 +585,11 @@ public class FunctionKeyList {
             this.grouped = new boolean[4];
             this.grouped[0] = grouped;
             types = new FunctionType[5];
-            upDataType();
+            upDateDataType();
         }
 
         /**
          * Used to create a new FunctionNode.
-         *
          * @param function    sets the input function for this FunctionNode.
          * @param functionKey sets the key for the corresponding function.
          */
@@ -615,7 +601,7 @@ public class FunctionKeyList {
             this.grouped = new boolean[4];
             this.grouped[0] = false;
             types = new FunctionType[5];
-            upDataType();
+            upDateDataType();
         }
 
         /**
@@ -631,7 +617,6 @@ public class FunctionKeyList {
 
         /**
          * Gets the current node set as previous.
-         *
          * @return the previous node in the list.
          */
         public FunctionNode getPrev() {
@@ -640,7 +625,6 @@ public class FunctionKeyList {
 
         /**
          * Gets the current node set as next.
-         *
          * @return the next node in the list.
          */
         public FunctionNode getNext() {
@@ -650,7 +634,6 @@ public class FunctionKeyList {
         /**
          * Gets the specified index from data.
          * {function, simplifiedFunction, derivative, simplifiedDerivative}
-         *
          * @param index the index to be returned.
          * @return the value in data corresponding with the given index.
          */
@@ -663,7 +646,6 @@ public class FunctionKeyList {
 
         /**
          * Gets the current function for this FunctionNode.
-         *
          * @return the function saved for this FunctionNode.
          */
         public String getFunction() {
@@ -672,7 +654,6 @@ public class FunctionKeyList {
 
         /**
          * Gets the current simplified function for this FunctionNode.
-         *
          * @return the simplified function saved for this FunctionNode.
          */
         public String getSimplifiedFunction() {
@@ -681,7 +662,6 @@ public class FunctionKeyList {
 
         /**
          * Gets the current derivative for this FunctionNode.
-         *
          * @return the derivative saved for this FunctionNode.
          */
         public String getDerivative() {
@@ -690,7 +670,6 @@ public class FunctionKeyList {
 
         /**
          * Gets the current simplified Derivative for this FunctionNode.
-         *
          * @return the simplified derivative saved for this FunctionNode.
          */
         public String getSimplifiedDerivative() {
@@ -699,7 +678,6 @@ public class FunctionKeyList {
 
         /**
          * Gets the current function key saved for this FunctionNode.
-         *
          * @return the function key saved for this FunctionNode.
          */
         public String getFunctionKey() {
@@ -708,7 +686,6 @@ public class FunctionKeyList {
 
         /**
          * Gets the current index for this FunctionNode.
-         *
          * @return the current value of the index.
          */
         public int getIndex() {
@@ -717,7 +694,6 @@ public class FunctionKeyList {
 
         /**
          * Gets the current grouping status for a function at a index.
-         *
          * @param index the index to get the grouping status of.
          * @return the grouping status of a function at the given index.
          */
@@ -727,7 +703,6 @@ public class FunctionKeyList {
 
         /**
          * Gets the function type corresponding to the given index.
-         *
          * @param index the index to returned.
          * @return the function type at the given index.
          */
@@ -737,7 +712,6 @@ public class FunctionKeyList {
 
         /**
          * Sets this FunctionNodes previous FunctionNode in a list.
-         *
          * @param prev the previous FunctionNode in the list.
          */
         public void setPrev(FunctionNode prev) {
@@ -747,7 +721,6 @@ public class FunctionKeyList {
 
         /**
          * Sets this FunctionNodes next FunctionNode in a list.
-         *
          * @param next the next FunctionNode in the list.
          */
         public void setNext(FunctionNode next) {
@@ -757,30 +730,27 @@ public class FunctionKeyList {
 
         /**
          * Sets this FunctionNode's function.
-         *
          * @param function the function being set.
          * @param grouped  determines if the function should have parenthesis around it.
          */
         public void setFunction(String function, boolean grouped) {
             data[0] = function;
             this.grouped[0] = grouped;
-            upDataType();
+            upDateDataType();
         }
 
         /**
          * Sets this FunctionNode's function.
-         *
          * @param function the function being set.
          */
         public void setFunction(String function) {
             data[0] = function;
             grouped[0] = true;
-            upDataType();
+            upDateDataType();
         }
 
         /**
          * Sets this FunctionNode's simplified function.
-         *
          * @param function the function being set.
          * @param grouped  determines if the function should have parenthesis around it.
          */
@@ -791,17 +761,15 @@ public class FunctionKeyList {
 
         /**
          * Sets this FunctionNode's simplified function.
-         *
          * @param function the function being set.
          */
         public void setSimplifiedFunction(String function) {
             data[1] = function;
-            grouped[1] = true;
+            grouped[1] = grouped[0];
         }
 
         /**
          * Sets this FunctionNode's derivative.
-         *
          * @param derivative the derivative being set.
          * @param grouped    determines if the derivative should have parenthesis around it.
          */
@@ -812,7 +780,6 @@ public class FunctionKeyList {
 
         /**
          * Sets this FunctionNode's derivative.
-         *
          * @param derivative the derivative being set.
          */
         public void setDerivative(String derivative) {
@@ -822,7 +789,6 @@ public class FunctionKeyList {
 
         /**
          * Sets this FunctionNode's simplified derivative.
-         *
          * @param derivative the derivative being set.
          * @param grouped    determines if the derivative should have parenthesis around it.
          */
@@ -833,7 +799,6 @@ public class FunctionKeyList {
 
         /**
          * Sets this FunctionNode's simplified derivative.
-         *
          * @param derivative the derivative being set.
          */
         public void setSimplifiedDerivative(String derivative) {
@@ -843,7 +808,6 @@ public class FunctionKeyList {
 
         /**
          * Sets this FunctionNode's function key.
-         *
          * @param functionKey the function key being set.
          */
         public void setFunctionKey(String functionKey) {
@@ -852,7 +816,6 @@ public class FunctionKeyList {
 
         /**
          * Set this FunctionNodes data values.
-         *
          * @param function the input into data.
          * @param grouped  True indicates that the corresponding index needs parenthesis, false
          *                 that it does not.
@@ -867,7 +830,6 @@ public class FunctionKeyList {
 
         /**
          * Set this FunctionNodes data values.
-         *
          * @param function the input into data.
          * @param index    the index to be updated.
          */
@@ -880,7 +842,6 @@ public class FunctionKeyList {
 
         /**
          * Sets this FunctionNodes index.
-         *
          * @param index the new index.
          */
         private void setIndex(int index) {
@@ -889,7 +850,6 @@ public class FunctionKeyList {
 
         /**
          * Sets this FunctionNodes grouping values.
-         *
          * @param grouped True indicates that the corresponding index needs parenthesis, false
          *                that it does not.
          * @param index   the index to be changed.
@@ -899,24 +859,33 @@ public class FunctionKeyList {
         }
 
         /**
+         * Sets the type of the given index.
+         * @param index the index to be set.
+         * @param type the type to be set.
+         */
+        public void setTypes(int index, FunctionType type){
+            types[index] = type;
+        }
+
+        /**
          * Checks to see if there is a previous node in the list.
-         *
          * @return True if there's a previous node, False if there is not.
          */
         public boolean hasPrevious() {
-            if (prev != null)
+            if (prev != null) {
                 return true;
+            }
             return false;
         }
 
         /**
          * Checks to see if there is a next node in the list.
-         *
          * @return True if there's a next node, False if there is not.
          */
         public boolean hasNext() {
-            if (next != null)
+            if (next != null) {
                 return true;
+            }
             return false;
         }
 
@@ -927,7 +896,8 @@ public class FunctionKeyList {
         private void upDateIndexes() {
             if (!hasPrevious()) {
                 setIndex(0);
-            } else {
+            }
+            else {
                 index = prev.getIndex() + 1;
             }
 
@@ -939,16 +909,18 @@ public class FunctionKeyList {
         /**
          * Updates all types to accurately reflect their corresponding functions/derivatives.
          */
-        public void upDataType() {
+        public void upDateDataType() {
             for (int x = 0; x <= 3; x++) {
                 try {
                     types[x] = FunctionSimplifier.getFunctionType(data[x]);
-                    if (types[x] == FunctionType.EXPO) {
+                    if (types[x] == FunctionType.EXPO || types[x] == FunctionType.PRO) {
                         grouped[x] = true;
-                    } else if (types[x] == FunctionType.NONE) {
+                    }
+                    else if (types[x] == FunctionType.NONE) {
                         grouped[x] = false;
                     }
-                } catch (NullPointerException e) {
+                }
+                catch (NullPointerException e) {
                     //do nothing
                 }
             }

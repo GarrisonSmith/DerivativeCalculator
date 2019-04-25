@@ -8,7 +8,6 @@ public class FunctionSimplifier {
     /**
      * Simplifies all functions in key and logs them into the simplified function,
      * should only contain one operator.
-     *
      * @param key the key to be referenced.
      */
     public static void simplifyFunction(FunctionKeyList key) {
@@ -17,30 +16,23 @@ public class FunctionSimplifier {
             String function = key.getFunction(x);
 
             FunctionType FunctionType = getFunctionType(function);
-            if (FunctionType == FunctionType.NONE) {
+            if (FunctionType == FunctionType.NONE || FunctionType == FunctionType.LN || FunctionType == FunctionType.TRIG) {
                 key.setSimplifiedFunction(x, function);
-                key.getNode(x).upDataType();
+                key.getNode(x).upDateDataType();
                 continue main;
             }
 
             String[] pieces = getLeftAndRight(function);
 
-            //TODO clean this mess up.
             for (int y = 0; y < pieces.length; y++) {
                 if (key.containsKey(pieces[y])) {
-                    try {
-                        if (getFunctionType(key.getSimplifiedFunction(pieces[y])) == FunctionType.NONE) {
-                            pieces[y] = key.getSimplifiedFunction(pieces[y]);
-                        } else {
-                            //TODO Distribution
-                            key.setSimplifiedFunction(x, function);
-                            key.getNode(x).upDataType();
-                            continue main;
-                        }
-                    } catch (NumberFormatException e) {
+                    if (getFunctionType(key.getSimplifiedFunction(pieces[y])) == FunctionType.NONE && key.getSimplifiedFunction(pieces[y]) != null) {
+                        pieces[y] = key.getSimplifiedFunction(pieces[y]);
+                    }
+                    else {
                         //TODO Distribution
                         key.setSimplifiedFunction(x, function);
-                        key.getNode(x).upDataType();
+                        key.getNode(x).upDateDataType();
                         continue main;
                     }
                 }
@@ -48,30 +40,29 @@ public class FunctionSimplifier {
 
             switch (getFunctionType(function)) {
                 case MULT:
-                    key.setSimplifiedFunction(x, FunctionFormater.cleanUp(multiply(pieces[0], pieces[1])));
+                    key.setSimplifiedFunction(x, (multiply(pieces[0], pieces[1])));
                     break;
                 case DIVI:
-                    key.setSimplifiedFunction(x, FunctionFormater.cleanUp((divide(pieces[0], pieces[1]))));
+                    key.setSimplifiedFunction(x, (divide(pieces[0], pieces[1])));
                     break;
                 case EXPO:
-                    key.setSimplifiedFunction(x, FunctionFormater.cleanUp((exponent(pieces[0], pieces[1]))));
+                    key.setSimplifiedFunction(x, (exponent(pieces[0], pieces[1])));
                     break;
                 case ADD:
-                    key.setSimplifiedFunction(x, FunctionFormater.cleanUp((add(pieces[0], pieces[1]))));
+                    key.setSimplifiedFunction(x, (add(pieces[0], pieces[1])));
                     break;
                 case SUB:
-                    key.setSimplifiedFunction(x, FunctionFormater.cleanUp((subtract(pieces[0], pieces[1]))));
+                    key.setSimplifiedFunction(x, (subtract(pieces[0], pieces[1])));
                     break;
             }
 
-            key.getNode(x).upDataType();
+            key.getNode(x).upDateDataType();
         }
     }
 
     /**
      * Simplifies all derivatives in key and logs them into the simplified derivative,
      * should only contain one operator.
-     *
      * @param key the key to be referenced.
      */
     public static void simplifyDerivative(FunctionKeyList key) {
@@ -82,7 +73,7 @@ public class FunctionSimplifier {
             FunctionType FunctionType = getFunctionType(function);
             if (FunctionType == FunctionType.NONE) {
                 key.setSimplifiedDerivative(x, function);
-                key.getNode(x).upDataType();
+                key.getNode(x).upDateDataType();
                 continue main;
             }
 
@@ -94,16 +85,18 @@ public class FunctionSimplifier {
                     try {
                         if (getFunctionType(key.getSimplifiedDerivative(pieces[y])) == FunctionType.NONE) {
                             pieces[y] = key.getSimplifiedDerivative(pieces[y]);
-                        } else {
+                        }
+                        else {
                             //TODO Distribution
                             key.setSimplifiedDerivative(x, function);
-                            key.getNode(x).upDataType();
+                            key.getNode(x).upDateDataType();
                             continue main;
                         }
-                    } catch (NumberFormatException e) {
+                    }
+                    catch (NumberFormatException e) {
                         //TODO Distribution
                         key.setSimplifiedDerivative(x, function);
-                        key.getNode(x).upDataType();
+                        key.getNode(x).upDateDataType();
                         continue main;
                     }
                 }
@@ -127,7 +120,7 @@ public class FunctionSimplifier {
                     break;
             }
 
-            key.getNode(x).upDataType();
+            key.getNode(x).upDateDataType();
         }
     }
 
@@ -135,7 +128,6 @@ public class FunctionSimplifier {
      * Multiplies the left by the right out if possible.
      * Used if, and only if, left and right are only numbers.
      * Can be multiples of X.
-     *
      * @param left  the left multiple.
      * @param right the right multiple.
      * @return The product of the left and the right.
@@ -144,9 +136,11 @@ public class FunctionSimplifier {
 
         if (left.contains("x") && right.contains("x")) {
             return formatNumber(stringToDouble(left) * stringToDouble(right)) + "x^|2";
-        } else if (left.contains("x") || right.contains("x")) {
+        }
+        else if (left.contains("x") || right.contains("x")) {
             return formatNumber(stringToDouble(left) * stringToDouble(right)) + "x";
-        } else {
+        }
+        else {
             return formatNumber(stringToDouble(left) * stringToDouble(right));
         }
     }
@@ -155,7 +149,6 @@ public class FunctionSimplifier {
      * Divides the left by the right if possible.
      * Used if, and only if, left and right are only numbers.
      * Can be multiples of X.
-     *
      * @param left  the numerator.
      * @param right the denominator.
      * @return the quotient of the left and the right.
@@ -164,18 +157,23 @@ public class FunctionSimplifier {
 
         if (left == right) {
             return "1";
-        } else {
+        }
+        else {
             if (left.contains("x") && right.contains("x")) {
                 return formatNumber(stringToDouble(left) / stringToDouble(right));
-            } else if (left.contains("x")) {
+            }
+            else if (left.contains("x")) {
                 return formatNumber(stringToDouble(left) / stringToDouble(right)) + "x";
-            } else if (right.contains("x")) {
+            }
+            else if (right.contains("x")) {
                 if (stringToDouble(left) >= stringToDouble(right)) {
                     return "(" + formatNumber(stringToDouble(left) / stringToDouble(right)) + "/|x)";
-                } else {
-                    return "(1/|" + formatNumber(stringToDouble(right) / stringToDouble(left)) + "x)";
                 }
-            } else {
+                else {
+                    return "(1/|" + formatNumber(stringToDouble(right) / stringToDouble(left)) + "x)"; //not always 1
+                }
+            }
+            else {
                 return formatNumber(stringToDouble(left) / stringToDouble(right));
             }
         }
@@ -185,7 +183,6 @@ public class FunctionSimplifier {
      * Raises the left to the power of the right if possible.
      * Used if, and only if, left and right are only numbers.
      * Can be multiples of X.
-     *
      * @param left  the base.
      * @param right the exponent.
      * @return If possible, the left raised to the power of the right. If not the original function.
@@ -194,7 +191,8 @@ public class FunctionSimplifier {
 
         if (left.contains("x") || right.contains("x")) {
             return left + "^|" + right;
-        } else {
+        }
+        else {
             return formatNumber(Math.pow(stringToDouble(left), stringToDouble(right)));
         }
     }
@@ -203,7 +201,6 @@ public class FunctionSimplifier {
      * Adds the left to the right if possible.
      * Used if, and only if, left and right are only numbers.
      * Can be multiples of X.
-     *
      * @param left  the left number.
      * @param right the right number.
      * @return If possible, the sum of the left and the right. If not the original function.
@@ -212,11 +209,14 @@ public class FunctionSimplifier {
 
         if (left.contains("x") || right.contains("x")) {
             return formatNumber(stringToDouble(left)) + "x+|" + formatNumber(stringToDouble(right)) + "x";
-        } else if (left.contains("x")) {
+        }
+        else if (left.contains("x")) {
             return formatNumber(stringToDouble(left)) + "x+|" + formatNumber(stringToDouble(right));
-        } else if (right.contains("x")) {
+        }
+        else if (right.contains("x")) {
             return formatNumber(stringToDouble(left)) + "+|" + formatNumber(stringToDouble(right)) + "x";
-        } else {
+        }
+        else {
             return formatNumber(stringToDouble(left) + stringToDouble(right));
         }
     }
@@ -225,7 +225,6 @@ public class FunctionSimplifier {
      * Subtracts the left from the right if possible.
      * Used if, and only if, left and right are only numbers.
      * Can be multiples of X.
-     *
      * @param left  the left number.
      * @param right the right number.
      * @return If possible, the difference of the left by the right. If not the original function.
@@ -234,18 +233,20 @@ public class FunctionSimplifier {
 
         if (left.contains("x") || right.contains("x")) {
             return formatNumber(stringToDouble(left)) + "x-|" + formatNumber(stringToDouble(right)) + "x";
-        } else if (left.contains("x")) {
+        }
+        else if (left.contains("x")) {
             return formatNumber(stringToDouble(left)) + "x-|" + formatNumber(stringToDouble(right));
-        } else if (right.contains("x")) {
+        }
+        else if (right.contains("x")) {
             return formatNumber(stringToDouble(left)) + "-|" + formatNumber(stringToDouble(right)) + "x";
-        } else {
+        }
+        else {
             return formatNumber(stringToDouble(left) - stringToDouble(right));
         }
     }
 
     /**
      * Formats numbers to have four decimals and no trailing zeros.
-     *
      * @param function the function to be formatted.
      * @return the formatted function.
      */
@@ -259,7 +260,6 @@ public class FunctionSimplifier {
 
     /**
      * Gets the degree of a variable.
-     *
      * @param function the function you want the degree of.
      * @return the degree of the function.
      * TODO functionality is kinda wonky, might need to be reworked completely.
@@ -268,29 +268,30 @@ public class FunctionSimplifier {
 
         if (function.contains("^")) {
             return function.split("\\^", 2)[1];
-        } else {
+        }
+        else {
             return "1";
         }
     }
 
     /**
      * Creates an array consisting of the right and left of the given function.
-     *
      * @param function the function to be split into the right and left.
      * @return an array of size 2 with the left in index 0 and the right in index 1.
+     * If the array is of size 0, then no left or right could be derived.
      */
     private static String[] getLeftAndRight(String function) {
 
         if (function.contains("*") || function.contains("/") || function.contains("^") || function.contains("-") || function.contains("+")) {
             return function.split("\\|\\*|\\|/|\\|\\^|\\|-|\\+", 2);
-        } else {
+        }
+        else {
             throw new IllegalArgumentException("Function has no left or right");
         }
     }
 
     /**
      * Converts a string to a double by removing all character that are not a number.
-     *
      * @param function the function to have all non-numbers removed.
      * @return the function with the all the non-numbers removed and only the numbers not in a exponent.
      */
@@ -301,20 +302,21 @@ public class FunctionSimplifier {
             for (char i : function.toCharArray()) {
                 if (Character.isDigit(i) || i == '.' || i == '-') {
                     toDouble += i;
-                } else if (i == '^') {
+                }
+                else if (i == '^') {
                     break;
                 }
             }
 
             return Double.parseDouble(toDouble);
-        } else {
+        }
+        else {
             throw new IllegalArgumentException("Only characters: " + function);
         }
     }
 
     /**
      * Used to determine the FunctionType of operation within a key.
-     *
      * @param function the function to have it's primary operation looked at.
      * @return the FunctionType of operation as the FunctionType enum.
      */
@@ -322,14 +324,25 @@ public class FunctionSimplifier {
 
         if (function.contains("|*") || function.contains("*|")) {
             return FunctionType.MULT;
-        } else if (function.contains("|/") || function.contains("/|")) {
+        }
+        else if (function.contains("|/") || function.contains("/|")) {
             return FunctionType.DIVI;
-        } else if (function.contains("|^") || function.contains("^|")) {
+        }
+        else if (function.contains("|^") || function.contains("^|")) {
             return FunctionType.EXPO;
-        } else if (function.contains("|+") || function.contains("+|")) {
+        }
+        else if (function.contains("|+") || function.contains("+|")) {
             return FunctionType.ADD;
-        } else if (function.contains("|-") || function.contains("-|")) {
+        }
+        else if (function.contains("|-") || function.contains("-|")) {
             return FunctionType.SUB;
+        }
+        else if (function.contains("sin") || function.contains("cos") || function.contains("tan") ||
+                function.contains("sec") || function.contains("csc") || function.contains("cot")) {
+            return FunctionType.TRIG;
+        }
+        else if (function.contains("ln")) {
+            return FunctionType.LN;
         }
 
         return FunctionType.NONE;
