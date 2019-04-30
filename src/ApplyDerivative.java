@@ -16,7 +16,7 @@ public class ApplyDerivative {
         else {
             String split[] = function.split("\\^");
 
-            return FunctionFormater.derivativeFlagConverter(split[1]) + "*" + function;
+            return FunctionFormater.derivativeFlagConverter(DerivativeRuleDeterminer.applyRule(split[1], key) + "*" + function);
         }
     }
 
@@ -47,7 +47,7 @@ public class ApplyDerivative {
     /**
      * Applies the quotient rule to the given function.
      * @param function the function to have the quotient rule applied to.
-     * @param key the key to be referenced.
+     * @param key      the key to be referenced.
      * @return the derivative of the function.
      */
     public static String quotientRule(String function, FunctionKeyList key) {
@@ -73,29 +73,68 @@ public class ApplyDerivative {
     }
 
     /**
-     *
-     * @param function
-     * @param key
-     * @return
+     * Applies differentiation rules to the given function.
+     * @param function the function to have differentiation rules applied to.
+     * @param key      the key to be referenced.
+     * @return the derivative of the function.
      */
     public static String differentiationRule(String function, FunctionKeyList key) {
 
-        return "0";
+        String inner = function.substring(2);
+
+        if (inner.contains("x") || inner.contains("_")) {
+            if (inner == "x") {
+                return "1/" + inner;
+            }
+            else {
+                return FunctionFormater.derivativeFlagConverter(inner) + "/" + inner;
+            }
+        }
+        else {
+            return "0";
+        }
     }
 
     /**
-     *
-     * @param function
-     * @param key
-     * @return
+     * Applies sinusoidal derivative rules to the given function.
+     * @param function the function have sinusoidal rules applied to.
+     * @param key      the key to be referenced.
+     * @return the derivative of the function
+     * @throws IllegalArgumentException when the function isn't supported.
      */
     public static String sinusoidalRule(String function, FunctionKeyList key) {
 
-        return "0";
+        String func = function.substring(0, 3);
+        String inner = function.substring(3);
+
+        switch (func.toLowerCase()) {
+            case "sin":
+                func = "cos";
+                break;
+            case "cos":
+                func = "sin";
+                break;
+            case "tan":
+                func = "sec^2";
+                break;
+            default:
+                throw new IllegalArgumentException("Not acceptable trig function");
+        }
+
+        if (inner.contains("x") || inner.contains("_")) {
+            if (inner == "x") {
+                return func + inner;
+            }
+            else {
+                return FunctionFormater.derivativeFlagConverter(inner) + "*" + func + inner;
+            }
+        }
+        else {
+            return "0";
+        }
     }
 
     /**
-     *
      * @param function
      * @param key
      * @return
@@ -104,27 +143,27 @@ public class ApplyDerivative {
 
         String[] split = function.split("\\^");
 
-        if((split[0].contains("x") || split[0].contains("_")) && (split[1].contains("x") || split[1].contains("_"))){
-
+        if ((split[0].contains("x") || split[0].contains("_")) && (split[1].contains("x") || split[1].contains("_"))) {
+            return function + "*(" + DerivativeRuleDeterminer.applyRule(split[1], key) + "*lnx+" + DerivativeRuleDeterminer.applyRule(split[1], key) + ")";
         }
         else if (split[1].contains("x") || split[1].contains("_")) {
-
+            if (split[1] == "x") {
+                return function + "*ln" + split[0];
+            }
+            else {
+                return FunctionFormater.derivativeFlagConverter(split[1]) + "*" + function + "*ln" + split[0];
+            }
         }
         else if (split[0].contains("x") || split[0].contains("_")) {
-
+            if ((FunctionSimplifier.stringToDouble(split[1]) - 1) == 1) {
+                return split[1] + "*" + split[0];
+            }
+            else {
+                return split[1] + "*" + split[0] + "^" + (FunctionSimplifier.stringToDouble(split[1]) - 1);
+            }
         }
-
-        return "0";
-    }
-
-    /**
-     *
-     * @param function
-     * @param key
-     * @return
-     */
-    public static String scaledX(String function, FunctionKeyList key) {
-
-        return "0";
+        else {
+            return "na";
+        }
     }
 }

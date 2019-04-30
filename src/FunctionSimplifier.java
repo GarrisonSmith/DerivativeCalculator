@@ -14,50 +14,83 @@ public class FunctionSimplifier {
         main:
         for (int x = 0; x < key.getLength(); x++) {
             String function = key.getFunction(x);
-
             FunctionType FunctionType = getFunctionType(function);
-            if (FunctionType == FunctionType.NONE || FunctionType == FunctionType.LN || FunctionType == FunctionType.TRIG) {
+
+            if (FunctionType == FunctionType.NONE) {
                 key.setSimplifiedFunction(x, function);
-                key.getNode(x).upDateDataType();
-                continue main;
             }
+            else if (FunctionType == FunctionType.LN || FunctionType == FunctionType.TRIG) {
 
-            String[] pieces = getLeftAndRight(function);
+                String inner;
+                if (FunctionType == FunctionType.LN) {
+                    inner = function.substring(2);
+                }
+                else {
+                    inner = function.substring(3);
+                }
 
-            for (int y = 0; y < pieces.length; y++) {
-                if (key.containsKey(pieces[y])) {
-                    if (getFunctionType(key.getSimplifiedFunction(pieces[y])) == FunctionType.NONE && key.getSimplifiedFunction(pieces[y]) != null) {
-                        pieces[y] = key.getSimplifiedFunction(pieces[y]);
-                    }
-                    else {
-                        //TODO Distribution
-                        key.setSimplifiedFunction(x, function);
-                        key.getNode(x).upDateDataType();
-                        continue main;
+                if (key.containsKey(inner)) {
+                    inner = key.getSimplifiedFunction(inner);
+                }
+
+                if (!inner.contains("x") && !inner.contains("_")) {
+                    switch (FunctionType) {
+                        case LN:
+                            key.setSimplifiedFunction(x, LN(inner));
+                            break;
+                        case TRIG:
+                            key.setSimplifiedFunction(x, trig(function, inner));
+                            break;
                     }
                 }
+                else {
+                    key.setSimplifiedFunction(x, function);
+                }
             }
+            else {
+                String[] pieces = getLeftAndRight(function);
 
-            switch (getFunctionType(function)) {
-                case MULT:
-                    key.setSimplifiedFunction(x, (multiply(pieces[0], pieces[1])));
-                    break;
-                case DIVI:
-                    key.setSimplifiedFunction(x, (divide(pieces[0], pieces[1])));
-                    break;
-                case EXPO:
-                    key.setSimplifiedFunction(x, (exponent(pieces[0], pieces[1])));
-                    break;
-                case ADD:
-                    key.setSimplifiedFunction(x, (add(pieces[0], pieces[1])));
-                    break;
-                case SUB:
-                    key.setSimplifiedFunction(x, (subtract(pieces[0], pieces[1])));
-                    break;
+                for (int y = 0; y < pieces.length; y++) {
+                    if (key.containsKey(pieces[y])) {
+                        if (getFunctionType(key.getSimplifiedFunction(pieces[y])) == FunctionType.NONE && key.getSimplifiedFunction(pieces[y]) != null) {
+                            pieces[y] = key.getSimplifiedFunction(pieces[y]);
+                        }
+                        else {
+                            //TODO Distribution
+                            key.setSimplifiedFunction(x, function);
+                            key.getNode(x).upDateDataType();
+                            continue main;
+                        }
+                    }
+                }
+
+                if (pieces[0].matches(".*\\d+.*") && pieces[1].matches(".*\\d+.*")) {
+                    switch (FunctionType) {
+                        case MULT:
+                            key.setSimplifiedFunction(x, (multiply(pieces[0], pieces[1])));
+                            break;
+                        case DIVI:
+                            key.setSimplifiedFunction(x, (divide(pieces[0], pieces[1])));
+                            break;
+                        case EXPO:
+                            key.setSimplifiedFunction(x, (exponent(pieces[0], pieces[1])));
+                            break;
+                        case ADD:
+                            key.setSimplifiedFunction(x, (add(pieces[0], pieces[1])));
+                            break;
+                        case SUB:
+                            key.setSimplifiedFunction(x, (subtract(pieces[0], pieces[1])));
+                            break;
+                    }
+                }
+                else {
+                    System.out.println("Is this needed: " + function);
+                    key.setSimplifiedFunction(x, function);
+                }
             }
-
             key.getNode(x).upDateDataType();
         }
+
     }
 
     /**
@@ -134,6 +167,13 @@ public class FunctionSimplifier {
      */
     private static String multiply(String left, String right) {
 
+        System.out.println(left);
+        System.out.println(right);
+
+        if(left == "0" || right == "0"){
+            return "0";
+        }
+
         if (left.contains("x") && right.contains("x")) {
             return formatNumber(stringToDouble(left) * stringToDouble(right)) + "x^|2";
         }
@@ -207,7 +247,7 @@ public class FunctionSimplifier {
      */
     private static String add(String left, String right) {
 
-        if (left.contains("x") || right.contains("x")) {
+        if (left.contains("x") && right.contains("x")) {
             return formatNumber(stringToDouble(left)) + "x+|" + formatNumber(stringToDouble(right)) + "x";
         }
         else if (left.contains("x")) {
@@ -231,7 +271,7 @@ public class FunctionSimplifier {
      */
     private static String subtract(String left, String right) {
 
-        if (left.contains("x") || right.contains("x")) {
+        if (left.contains("x") && right.contains("x")) {
             return formatNumber(stringToDouble(left)) + "x-|" + formatNumber(stringToDouble(right)) + "x";
         }
         else if (left.contains("x")) {
@@ -243,6 +283,38 @@ public class FunctionSimplifier {
         else {
             return formatNumber(stringToDouble(left) - stringToDouble(right));
         }
+    }
+
+    /**
+     * Takes the natural log of the given number.
+     * Used if, and only if, inner is only numbers.
+     * @param inner the string of numbers to have the natural log of.
+     * @return the natural log of the given inner.
+     */
+    private static String LN(String inner) {
+        return formatNumber(Math.log(stringToDouble(inner)));
+    }
+
+    /**
+     * Take the proper trig function of the given inner.
+     * @param function the original full function.
+     * @param inner the number to be taken.
+     * @return the trig function of the given function.
+     */
+    private static String trig(String function, String inner) {
+        String foo = function;
+        switch (function.substring(0, 3).toLowerCase()) {
+            case "sin":
+                foo = formatNumber(Math.sin(stringToDouble(inner)));
+                break;
+            case "cos":
+                foo = formatNumber(Math.cos(stringToDouble(inner)));
+                break;
+            case "tan":
+                foo = formatNumber(Math.tan(stringToDouble(inner)));
+                break;
+        }
+        return foo;
     }
 
     /**
@@ -280,7 +352,7 @@ public class FunctionSimplifier {
      * @return an array of size 2 with the left in index 0 and the right in index 1.
      * If the array is of size 0, then no left or right could be derived.
      */
-    private static String[] getLeftAndRight(String function) {
+    public static String[] getLeftAndRight(String function) {
 
         if (function.contains("*") || function.contains("/") || function.contains("^") || function.contains("-") || function.contains("+")) {
             return function.split("\\|\\*|\\|/|\\|\\^|\\|-|\\+", 2);
@@ -295,7 +367,7 @@ public class FunctionSimplifier {
      * @param function the function to have all non-numbers removed.
      * @return the function with the all the non-numbers removed and only the numbers not in a exponent.
      */
-    private static double stringToDouble(String function) {
+    public static double stringToDouble(String function) {
         String toDouble = "";
 
         if (function.matches(".*\\d+.*")) { //checks if the function has any number in it at all

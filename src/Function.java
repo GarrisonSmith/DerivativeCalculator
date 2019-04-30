@@ -75,7 +75,7 @@ public class Function {
      */
     public String getOutput() {
         try {
-            return output;
+            return FunctionFormater.cleanUp(output);
         }
         catch (NullPointerException e) {
             return "Output Not Calculated Yet";
@@ -97,9 +97,26 @@ public class Function {
         constructParts();
         stages.add("Function after being assembled from parts: ");
         stages.add(current);
-        DerivativeRuleDeterminer.applyRule(key);
+        takeDerivative();
+        expandEverything();
 
-        return null;
+        return output;
+    }
+
+    /**
+     * Simplifies the input function.
+     * @return the function, now simplified.
+     */
+    public String simplify(){
+        stages.add("Input Function: ");
+        stages.add(input);
+        formatInput();
+        stages.add("Function after Formatting: ");
+        stages.add(current);
+        simplifyFunction();
+        stages.add("Key now simplified");
+        constructParts();
+        return current;
     }
 
     /**
@@ -156,6 +173,24 @@ public class Function {
         }
 
         current = FunctionFormater.cleanUp(FunctionFormater.functionKeyExpander(current, key));
+    }
+
+    /**
+     * Take the derivative from the simplified function keys.
+     */
+    private void takeDerivative(){
+        DerivativeRuleDeterminer.applyRule(key);
+    }
+
+    /**
+     * Expands all keys in the function.
+     */
+    private void expandEverything(){
+
+        output = "";
+        for(int i = 0; i < parts.length; i++){
+            output += FunctionFormater.everythingKeyExpander(FunctionFormater.derivativeFlagConverter(parts[i]), key);
+        }
     }
 
     /**

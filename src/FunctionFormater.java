@@ -12,6 +12,7 @@ public class FunctionFormater {
         function = function.replaceAll(" ", "");
         function = function.replaceAll("\\|", "");
         function = function.replaceAll("X", "x");
+        function = function.replaceAll("pi", "3.1415");
         function = preOperationsFlag(function);
         function = parenthesisCollapser(function, key);
 
@@ -44,7 +45,7 @@ public class FunctionFormater {
         String[] foo;
 
         if (function.contains("+") || function.contains("-")) {
-            function = function.replace("+", " +");
+            function = function.replace("|+", " |+");
             function = function.replace("|-", " |-");
 
             if (function.charAt(0) == ' ') {
@@ -66,7 +67,23 @@ public class FunctionFormater {
      */
     public static String parenthesisGrouper(String function, FunctionKeyList key) {
         int current, end = 1;
-        boolean pass = false;
+
+        String[] foo = {"l", "c", "s", "t"};
+        for (int i = 0; i < foo.length - 1; i++) {
+            if (function.contains(foo[i])) {
+
+                int start = end = function.lastIndexOf(foo[i]);
+
+                for (; end < function.length(); end++) {
+                    if (function.charAt(end) == ')' || function.charAt(end) == '|') {
+                        break;
+                    }
+                }
+
+                function = function.substring(0, start) + key.addFunction(function.substring(start, end)) + function.substring(end);
+                return parenthesisGrouper(function, key);
+            }
+        }
 
         if (function.contains("^")) {
             int start = current = end = function.lastIndexOf('^');
@@ -91,6 +108,7 @@ public class FunctionFormater {
             return parenthesisGrouper(function, key);
         }
 
+        boolean pass = false;
 
         for (; end < function.length(); end++) {
             if (function.charAt(end) == '/' || function.charAt(end) == '*') {
@@ -145,6 +163,25 @@ public class FunctionFormater {
     }
 
     /**
+     * Replace all keys with there functions and derivatives.
+     * @param function the function to be expanded out.
+     * @param key the key to be referenced.
+     * @return the input function with all keys expanded out.
+     */
+    public static String everythingKeyExpander(String function, FunctionKeyList key){
+        String foo=function;
+        while(foo.contains("_") || foo.contains("¬")){
+            if(foo.contains("¬")) {
+                foo = derivativeKeyExpander(foo, key);
+            }
+            else if(foo.contains("_")){
+                foo = functionKeyExpander(foo, key);
+            }
+        }
+        return foo;
+    }
+
+    /**
      * Replaces all keys with the functions they represent.
      * @param function the function to be expanded out.
      * @param key      the key to be referenced for the keys and their functions.
@@ -182,18 +219,18 @@ public class FunctionFormater {
     public static String derivativeKeyExpander(String function, FunctionKeyList key) {
         int start = -1, end = 0;
 
-        if (function.contains("_")) {
+        if (function.contains("¬")) {
             for (int x = 0; x < function.length(); x++) {
-                if (function.charAt(x) == '_' && start == -1) {
+                if (function.charAt(x) == '¬' && start == -1) {
                     start = x;
                 }
-                else if (function.charAt(x) == '_') {
+                else if (function.charAt(x) == '¬') {
                     end = x;
                 }
 
                 if (end != 0) {
                     return derivativeKeyExpander(function.substring(0, start)
-                            + key.getNode(function.substring(start, end + 1)).getData(3)
+                            + key.getNode(functionFlagConverter(function.substring(start, end + 1))).getData(2)
                             + function.substring(end + 1), key);
                 }
             }
@@ -224,6 +261,7 @@ public class FunctionFormater {
         function = function.replace("7- ", "7|-");
         function = function.replace("8- ", "8|-");
         function = function.replace("9- ", "9|-");
+        function = function.replace("e- ", "e|-");
         function = function.replaceAll(" ", "");
         //Every - without a | is a negative.
 
@@ -257,7 +295,7 @@ public class FunctionFormater {
      * @param function the function to be converted.
      * @return the function, with all derivative flags converted.
      */
-    public static String functionFlagConverter(String function){
+    public static String functionFlagConverter(String function) {
         return function.replaceAll("¬", "_");
     }
 
@@ -266,7 +304,7 @@ public class FunctionFormater {
      * @param function the function to be converted.
      * @return the function, with all function flags converted.
      */
-    public static String derivativeFlagConverter(String function){
+    public static String derivativeFlagConverter(String function) {
         return function.replaceAll("_", "¬");
     }
 }
