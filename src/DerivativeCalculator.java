@@ -35,4 +35,20 @@ public class DerivativeCalculator {
         while(!next.equals(current));
         return current;
     }
+    
+        public static double[][] getPoints(double xMin, double xMax, int numOfPoints, String function){
+    	double[][] foo = new double[numOfPoints][2];
+    	
+    	int x = 0;
+    	double increment = (xMax-xMin/(double)(numOfPoints-2));
+    	for(double i = xMin; i < xMax; i+=increment) {
+    		System.out.println("here: "+String.valueOf(i));
+    		foo[x] = new double[] {i, Double.valueOf(simplify(function.replaceAll("x", String.valueOf(i))))};
+    		x++;
+    	}
+    	foo[x] = new double[] {x, Double.parseDouble(simplify(function.replaceAll("x", String.valueOf(xMax))))};
+    	
+    	return foo;
+    }
+}
 }
