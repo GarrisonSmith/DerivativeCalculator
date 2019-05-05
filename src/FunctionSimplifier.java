@@ -167,9 +167,6 @@ public class FunctionSimplifier {
      */
     private static String multiply(String left, String right) {
 
-        System.out.println(left);
-        System.out.println(right);
-
         if(left == "0" || right == "0"){
             return "0";
         }

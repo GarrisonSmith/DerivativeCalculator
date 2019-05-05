@@ -97,9 +97,9 @@ public class ApplyDerivative {
 
     /**
      * Applies sinusoidal derivative rules to the given function.
-     * @param function the function have sinusoidal rules applied to.
+     * @param function the function to have sinusoidal rules applied to.
      * @param key      the key to be referenced.
-     * @return the derivative of the function
+     * @return the derivative of the function.
      * @throws IllegalArgumentException when the function isn't supported.
      */
     public static String sinusoidalRule(String function, FunctionKeyList key) {
@@ -135,9 +135,10 @@ public class ApplyDerivative {
     }
 
     /**
-     * @param function
-     * @param key
-     * @return
+     * Applies the power rule to the given function.
+     * @param function the function to have the power rule applied to it.
+     * @param key      the key to be referenced.
+     * @return the derivative of the function.
      */
     public static String powerRule(String function, FunctionKeyList key) {
 
