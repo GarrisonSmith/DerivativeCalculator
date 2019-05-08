@@ -16,6 +16,15 @@ public class FunctionSimplifier {
             String function = key.getFunction(x);
             FunctionType FunctionType = getFunctionType(function);
 
+
+            if(FunctionType == FunctionType.MULT){
+                String[] pieces = getLeftAndRight(function);
+                if(pieces[0].equals("0") || pieces[1].equals("0")){
+                    key.setSimplifiedFunction(x, "0");
+                    continue;
+                }
+            }
+
             if (FunctionType == FunctionType.NONE) {
                 key.setSimplifiedFunction(x, function);
             }
@@ -84,7 +93,7 @@ public class FunctionSimplifier {
                     }
                 }
                 else {
-                    System.out.println("Is this needed: " + function);
+                    //System.out.println("Is this needed: " + function);
                     key.setSimplifiedFunction(x, function);
                 }
             }
@@ -94,67 +103,216 @@ public class FunctionSimplifier {
     }
 
     /**
-     * Simplifies all derivatives in key and logs them into the simplified derivative,
-     * should only contain one operator.
+     * Adds an array of polynomials together
+     * @param parts the array to be referenced.
      * @param key the key to be referenced.
+     * @return the new array with everything simplified.
      */
-    public static void simplifyDerivative(FunctionKeyList key) {
-        main:
-        for (int x = 0; x < key.getLength(); x++) {
-            String function = key.getDerivaitve(x);
+    public static String[] addParts(String[] parts, FunctionKeyList key) {
 
-            FunctionType FunctionType = getFunctionType(function);
-            if (FunctionType == FunctionType.NONE) {
-                key.setSimplifiedDerivative(x, function);
-                key.getNode(x).upDateDataType();
-                continue main;
-            }
-
-            String[] pieces = getLeftAndRight(function);
-
-            //TODO clean this mess up.
-            for (int y = 0; y < pieces.length; y++) {
-                if (key.containsKey(pieces[y])) {
-                    try {
-                        if (getFunctionType(key.getSimplifiedDerivative(pieces[y])) == FunctionType.NONE) {
-                            pieces[y] = key.getSimplifiedDerivative(pieces[y]);
+        for (int i = 0; i < parts.length - 1; i++) {
+            String current = key.getSimplifiedFunction(parts[i].replaceAll("-|\\||\\+", ""));
+            char currentSign = getSign(parts[i].replaceAll("-|\\||\\+", ""));
+            for (int ii = i + 1; ii < parts.length; ii++) {
+                String next = key.getSimplifiedFunction(parts[ii].replaceAll("-|\\||\\+", ""));
+                char nextSign = getSign(parts[ii]);
+                if (getDegree(current).equals(getDegree(next)) && !key.containsKey(current) && !key.containsKey(next) &&
+                        ((getFunctionType(current) == FunctionType.EXPO && getFunctionType(next) == FunctionType.EXPO) ||
+                                (getFunctionType(current) == FunctionType.NONE && getFunctionType(next) == FunctionType.NONE))) {
+                    String degree = getDegree(current);
+                    if (degree == "0" || degree == "0.0") {
+                        if (currentSign == '-') {
+                            parts[i] = "0";
+                            parts[ii] = "-1";
                         }
                         else {
-                            //TODO Distribution
-                            key.setSimplifiedDerivative(x, function);
-                            key.getNode(x).upDateDataType();
-                            continue main;
+                            parts[i] = "0";
+                            parts[ii] = "-1";
                         }
                     }
-                    catch (NumberFormatException e) {
-                        //TODO Distribution
-                        key.setSimplifiedDerivative(x, function);
-                        key.getNode(x).upDateDataType();
-                        continue main;
+                    else if (degree == "1" || degree == "1.0") {
+                        if (currentSign == '-') {
+                            if (nextSign == '-') { //negative first - second
+                                parts[i] = "0";
+                                if (((0 - stringToDouble(current)) - stringToDouble(next)) < 0) {
+                                    parts[ii] = "|-" + key.addSimplifiedFunction(String.valueOf((0 - stringToDouble(current)) - stringToDouble(next)).substring(1));
+                                }
+                                else {
+                                    parts[ii] = "|+" + key.addSimplifiedFunction(String.valueOf((0 - stringToDouble(current)) - stringToDouble(next)));
+                                }
+                                break;
+                            }
+                            else { //negative first + second
+                                parts[i] = "0";
+                                if (((0 - stringToDouble(current)) + stringToDouble(next)) < 0) {
+                                    parts[ii] = "|-" + key.addSimplifiedFunction(String.valueOf((0 - stringToDouble(current)) + stringToDouble(next)).substring(1));
+                                }
+                                else {
+                                    parts[ii] = "|+" + key.addSimplifiedFunction(String.valueOf((0 - stringToDouble(current)) + stringToDouble(next)));
+                                }
+                                break;
+                            }
+                        }
+                        else {
+                            if (nextSign == '-') { //positive first - second
+                                parts[i] = "0";
+                                if (((stringToDouble(current)) - stringToDouble(next)) < 0) {
+                                    parts[ii] = "|-" + key.addSimplifiedFunction(String.valueOf((stringToDouble(current)) - stringToDouble(next)).substring(1));
+                                }
+                                else {
+                                    parts[ii] = "|+" + key.addSimplifiedFunction(String.valueOf((stringToDouble(current)) - stringToDouble(next)));
+                                }
+                                break;
+                            }
+                            else { //positive first + second
+                                parts[i] = "0";
+                                if (((stringToDouble(current)) + stringToDouble(next)) < 0) {
+                                    parts[ii] = "|-" + key.addSimplifiedFunction(String.valueOf((stringToDouble(current)) + stringToDouble(next)).substring(1));
+                                }
+                                else {
+                                    parts[ii] = "|+" + key.addSimplifiedFunction(String.valueOf((stringToDouble(current)) + stringToDouble(next)));
+                                }
+                                break;
+                            }
+                        }
+                    }
+                    else if (degree.equals("Lone x")) {
+                        if (currentSign == '-') {
+                            if (nextSign == '-') { //negative first - second
+                                parts[i] = "0";
+                                if (((0 - stringToDouble(current)) - stringToDouble(next)) == 0) {
+                                    parts[ii] = "|-" + key.addSimplifiedFunction("0");
+                                }
+                                else if (((0 - stringToDouble(current)) - stringToDouble(next)) < 0) {
+                                    parts[ii] = "|-" + key.addSimplifiedFunction(String.valueOf((0 - stringToDouble(current)) - stringToDouble(next)).substring(1) + "x");
+                                }
+                                else {
+                                    parts[ii] = "|+" + key.addSimplifiedFunction(String.valueOf((0 - stringToDouble(current)) - stringToDouble(next)) + "x");
+                                }
+                                break;
+                            }
+                            else { //negative first + second
+                                parts[i] = "0";
+                                if (((0 - stringToDouble(current)) + stringToDouble(next)) == 0) {
+                                    parts[ii] = "|-" + key.addSimplifiedFunction("0");
+                                }
+                                else if (((0 - stringToDouble(current)) + stringToDouble(next)) < 0) {
+                                    parts[ii] = "|-" + key.addSimplifiedFunction(String.valueOf((0 - stringToDouble(current)) + stringToDouble(next)).substring(1) + "x");
+                                }
+                                else {
+                                    parts[ii] = "|+" + key.addSimplifiedFunction(String.valueOf((0 - stringToDouble(current)) + stringToDouble(next)) + "x");
+                                }
+                                break;
+                            }
+                        }
+                        else {
+                            if (nextSign == '-') { //positive first - second
+                                parts[i] = "0";
+                                if (((stringToDouble(current)) - stringToDouble(next)) == 0) {
+                                    parts[ii] = "|+" + key.addSimplifiedFunction("0");
+                                }
+                                else if (((stringToDouble(current)) - stringToDouble(next)) < 0) {
+                                    parts[ii] = "|-" + key.addSimplifiedFunction(String.valueOf((stringToDouble(current)) - stringToDouble(next)).substring(1) + "x");
+                                }
+                                else {
+                                    parts[ii] = "|+" + key.addSimplifiedFunction(String.valueOf((stringToDouble(current)) - stringToDouble(next)) + "x");
+                                }
+                                break;
+                            }
+                            else { //positive first + second
+                                parts[i] = "0";
+                                if (((stringToDouble(current)) + stringToDouble(next)) == 0) {
+                                    parts[ii] = "|+" + key.addSimplifiedFunction("0");
+                                }
+                                else if (((stringToDouble(current)) + stringToDouble(next)) < 0) {
+                                    parts[ii] = "|-" + key.addSimplifiedFunction(String.valueOf((stringToDouble(current)) + stringToDouble(next)).substring(1) + "x");
+                                }
+                                else {
+                                    parts[ii] = "|+" + key.addSimplifiedFunction(String.valueOf((stringToDouble(current)) + stringToDouble(next)) + "x");
+                                }
+                                break;
+                            }
+                        }
+                    }
+                    else {
+                        if (currentSign == '-') {
+                            if (nextSign == '-') { //negative first - second
+                                parts[i] = "0";
+                                if (((0 - stringToDouble(current)) - stringToDouble(next)) == 0) {
+                                    parts[ii] = "|-" + key.addSimplifiedFunction("0");
+                                }
+                                else if (((0 - stringToDouble(current)) - stringToDouble(next)) < 0) {
+                                    parts[ii] = "|-" + key.addSimplifiedFunction(String.valueOf((0 - stringToDouble(current)) - stringToDouble(next)).substring(1) + "x^|" + degree);
+                                }
+                                else {
+                                    parts[ii] = "|+" + key.addSimplifiedFunction(String.valueOf((0 - stringToDouble(current)) - stringToDouble(next)) + "x^|" + degree);
+                                }
+                                break;
+                            }
+                            else { //negative first + second
+                                parts[i] = "0";
+                                if (((0 - stringToDouble(current)) + stringToDouble(next)) == 0) {
+                                    parts[ii] = "|-" + key.addSimplifiedFunction("0");
+                                }
+                                else if (((0 - stringToDouble(current)) + stringToDouble(next)) < 0) {
+                                    parts[ii] = "|-" + key.addSimplifiedFunction(String.valueOf((0 - stringToDouble(current)) + stringToDouble(next)).substring(1) + "x^|" + degree);
+                                }
+                                else {
+                                    parts[ii] = "|+" + key.addSimplifiedFunction(String.valueOf((0 - stringToDouble(current)) + stringToDouble(next)) + "x^|" + degree);
+                                }
+                                break;
+                            }
+                        }
+                        else {
+                            if (nextSign == '-') { //positive first - second
+                                parts[i] = "0";
+                                if (((stringToDouble(current)) - stringToDouble(next)) == 0) {
+                                    parts[ii] = "|+" + key.addSimplifiedFunction("0");
+                                }
+                                else if (((stringToDouble(current)) - stringToDouble(next)) < 0) {
+                                    parts[ii] = "|-" + key.addSimplifiedFunction(String.valueOf((stringToDouble(current)) - stringToDouble(next)).substring(1) + "x^|" + degree);
+                                }
+                                else {
+                                    parts[ii] = "|+" + key.addSimplifiedFunction(String.valueOf((stringToDouble(current)) - stringToDouble(next)) + "x^|" + degree);
+                                }
+                                break;
+                            }
+                            else { //positive first + second
+                                parts[i] = "0";
+                                if (((stringToDouble(current)) + stringToDouble(next)) == 0) {
+                                    parts[ii] = "|+" + key.addSimplifiedFunction("0");
+                                }
+                                else if (((stringToDouble(current)) + stringToDouble(next)) < 0) {
+                                    parts[ii] = "|-" + key.addSimplifiedFunction(String.valueOf((stringToDouble(current)) + stringToDouble(next)).substring(1) + "x^|" + degree);
+                                }
+                                else {
+                                    parts[ii] = "|+" + key.addSimplifiedFunction(String.valueOf((stringToDouble(current)) + stringToDouble(next)) + "x^|" + degree);
+                                }
+                                break;
+                            }
+                        }
                     }
                 }
             }
-
-            switch (getFunctionType(function)) {
-                case MULT:
-                    key.setSimplifiedDerivative(x, (multiply(pieces[0], pieces[1])));
-                    break;
-                case DIVI:
-                    key.setSimplifiedDerivative(x, (divide(pieces[0], pieces[1])));
-                    break;
-                case EXPO:
-                    key.setSimplifiedDerivative(x, (exponent(pieces[0], pieces[1])));
-                    break;
-                case ADD:
-                    key.setSimplifiedDerivative(x, (add(pieces[0], pieces[1])));
-                    break;
-                case SUB:
-                    key.setSimplifiedDerivative(x, (subtract(pieces[0], pieces[1])));
-                    break;
-            }
-
-            key.getNode(x).upDateDataType();
         }
+
+
+        return parts;
+    }
+
+    /**
+     * Gets the sign of the function, either a - or +.
+     * @param function the function to be referenced.
+     * @return the sign of the function.
+     */
+    public static char getSign(String function) {
+        char foo = '+';
+        for (char i : function.toCharArray()) {
+            if (i == '-') {
+                foo = '-';
+            }
+        }
+        return foo;
     }
 
     /**
@@ -167,7 +325,7 @@ public class FunctionSimplifier {
      */
     private static String multiply(String left, String right) {
 
-        if(left == "0" || right == "0"){
+        if (left == "0" || right == "0") {
             return "0";
         }
 
@@ -295,7 +453,7 @@ public class FunctionSimplifier {
     /**
      * Take the proper trig function of the given inner.
      * @param function the original full function.
-     * @param inner the number to be taken.
+     * @param inner    the number to be taken.
      * @return the trig function of the given function.
      */
     private static String trig(String function, String inner) {
@@ -331,12 +489,14 @@ public class FunctionSimplifier {
      * Gets the degree of a variable.
      * @param function the function you want the degree of.
      * @return the degree of the function.
-     * TODO functionality is kinda wonky, might need to be reworked completely.
      */
-    private static String getDegree(String function) {
+    public static String getDegree(String function) {
 
         if (function.contains("^")) {
-            return function.split("\\^", 2)[1];
+            return function.split("\\^", 2)[1].replaceAll("\\|| ", "");
+        }
+        else if (function.contains("x")) {
+            return "Lone x";
         }
         else {
             return "1";
@@ -367,13 +527,22 @@ public class FunctionSimplifier {
     public static double stringToDouble(String function) {
         String toDouble = "";
 
-        if (function.matches(".*\\d+.*")) { //checks if the function has any number in it at all
-            for (char i : function.toCharArray()) {
-                if (Character.isDigit(i) || i == '.' || i == '-') {
-                    toDouble += i;
-                }
-                else if (i == '^') {
-                    break;
+        if (function.equals("x")) {
+            return 1;
+        }
+        else if (function.matches(".*\\d+.*")) { //checks if the function has any number in it at all
+
+            if(function.charAt(0) == 'x'){
+                toDouble = "1";
+            }
+            else {
+                for (char i : function.toCharArray()) {
+                    if (Character.isDigit(i) || i == '.' || i == '-') {
+                        toDouble += i;
+                    }
+                    else if (i == '^') {
+                        break;
+                    }
                 }
             }
 

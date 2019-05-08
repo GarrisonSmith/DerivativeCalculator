@@ -10,12 +10,42 @@ public class FunctionFormater {
      */
     public static String condense(String function, FunctionKeyList key) {
         function = function.replaceAll(" ", "");
+
+
+
+        if(DerivativeCalculator.replacement != null){
+            function = function.replace("0x", "0");
+            function = function.replaceAll("1x", "x");
+            function = function.replace("2x", "2*x");
+            function = function.replace("3x", "3*x");
+            function = function.replace("4x", "4*x");
+            function = function.replace("5x", "5*x");
+            function = function.replace("6x", "6*x");
+            function = function.replace("7x", "7*x");
+            function = function.replace("8x", "8*x");
+            function = function.replace("9x", "9*x");
+            function = function.replace("pix", "pi*x");
+            function = function.replaceAll("x", DerivativeCalculator.replacement);
+        }
+        else{
+            function = function.replace("0*x", "0");
+            function = function.replaceAll("1*x", "x");
+            function = function.replace("2*x", "2x");
+            function = function.replace("3*x", "3x");
+            function = function.replace("4*x", "4x");
+            function = function.replace("5*x", "5x");
+            function = function.replace("6*x", "6x");
+            function = function.replace("7*x", "7x");
+            function = function.replace("8*x", "8x");
+            function = function.replace("9*x", "9x");
+            function = function.replace("pi*x", "pix");
+        }
+
         function = function.replaceAll("\\|", "");
         function = function.replaceAll("X", "x");
         function = function.replaceAll("pi", "3.1415");
         function = preOperationsFlag(function);
         function = parenthesisCollapser(function, key);
-
         return function;
     }
 
@@ -26,6 +56,7 @@ public class FunctionFormater {
      */
     public static String cleanUp(String function) {
         function = function.replaceAll("\\+\\+", "+");
+        function = function.replaceAll("\\|--", "-");
         function = function.replaceAll("--", "");
         function = function.replaceAll("-\\+", "-");
         function = function.replaceAll("\\+-", "-");
@@ -53,7 +84,6 @@ public class FunctionFormater {
             }
 
             foo = function.split(" ");
-
             return foo;
         }
         throw new IllegalArgumentException("Function has no parts: " + function);
@@ -89,7 +119,7 @@ public class FunctionFormater {
             int start = current = end = function.lastIndexOf('^');
 
             for (; end < function.length(); end++) {
-                if ((function.charAt(end) == '/' || function.charAt(end) == '*' || function.charAt(end) == '^') && end != current) {
+                if ((function.charAt(end) == '/' || function.charAt(end) == '*' || function.charAt(end) == '^' || function.charAt(end) == '+' || function.charAt(end) == '-') && end != current) {
                     break;
                 }
             }
@@ -111,7 +141,7 @@ public class FunctionFormater {
         boolean pass = false;
 
         for (; end < function.length(); end++) {
-            if (function.charAt(end) == '/' || function.charAt(end) == '*') {
+            if (function.charAt(end) == '|') {
                 if (pass) {
 
                     if (function.charAt(end - 1) == '|') {
@@ -262,6 +292,7 @@ public class FunctionFormater {
         function = function.replace("8- ", "8|-");
         function = function.replace("9- ", "9|-");
         function = function.replace("e- ", "e|-");
+        function = function.replace("x- ", "x|-");
         function = function.replaceAll(" ", "");
         //Every - without a | is a negative.
 

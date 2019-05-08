@@ -53,7 +53,6 @@ public class ApplyDerivative {
     public static String quotientRule(String function, FunctionKeyList key) {
 
         String[] split = function.split("/");
-
         if (key.containsKey(split[0]) && key.containsKey(split[1])) {
             return "(" + FunctionFormater.derivativeFlagConverter(split[0]) + "*" + split[1] + "-" +
                     FunctionFormater.derivativeFlagConverter(split[1]) + "*" + split[0] + ")/(" + split[1] + ")^2";

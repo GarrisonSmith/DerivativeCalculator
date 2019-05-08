@@ -103,6 +103,38 @@ public class FunctionKeyList {
     }
 
     /**
+     * Sets both the function and simplified function and adds them to the key.
+     * @param function the function to be added.
+     * @return the key now representing the function.
+     */
+    public String addSimplifiedFunction(String function){
+        if (head.getFunction() == null) {
+            head.setFunction(function);
+            head.setSimplifiedFunction(function);
+            head.setFunctionKey(keyGenerator());
+            head.setIndex(length);
+            tail = head;
+            length++;
+        }
+        else if (containsFunction(function) != null) {
+            //do nothing
+        }
+        else if (containsKey(function)) {
+            return function;
+        }
+        else {
+            FunctionNode foo = new FunctionNode(function, keyGenerator());
+            foo.setSimplifiedFunction(function);
+            foo.setIndex(length);
+            tail.setNext(foo);
+            foo.setPrev(tail);
+            tail = foo;
+            length++;
+        }
+        return getFunctionKey(function);
+    }
+
+    /**
      * Generates a new key for a new function.
      * @return the key representing the function.
      */
@@ -844,7 +876,7 @@ public class FunctionKeyList {
          * Sets this FunctionNodes index.
          * @param index the new index.
          */
-        private void setIndex(int index) {
+        public void setIndex(int index) {
             this.index = index;
         }
 

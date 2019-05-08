@@ -94,11 +94,14 @@ public class Function {
         stages.add(current);
         simplifyFunction();
         stages.add("Key now simplified");
+        addParts();
         constructParts();
         stages.add("Function after being assembled from parts: ");
         stages.add(current);
+        stages.add("Function after derivative being taken:");
         takeDerivative();
         expandEverything();
+        stages.add(output);
 
         return output;
     }
@@ -115,6 +118,7 @@ public class Function {
         stages.add(current);
         simplifyFunction();
         stages.add("Key now simplified");
+        addParts();
         constructParts();
         return current;
     }
@@ -165,7 +169,15 @@ public class Function {
         String temp = "";
         try {
             for (String i : parts) {
-                temp += i;
+                if(i == "0" || i == "0.0"){
+                    //do nothing
+                }
+                else if(i == "-0" || i == "-0.0"){
+                    temp +="-";
+                }
+                else{
+                    temp += i;
+                }
             }
             current = temp;
         }
@@ -191,6 +203,10 @@ public class Function {
         for(int i = 0; i < parts.length; i++){
             output += FunctionFormater.everythingKeyExpander(FunctionFormater.derivativeFlagConverter(parts[i]), key);
         }
+    }
+
+    private void addParts(){
+        parts = FunctionSimplifier.addParts(parts, key);
     }
 
     /**
