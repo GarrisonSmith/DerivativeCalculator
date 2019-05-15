@@ -10,8 +10,10 @@ public class FunctionFormater {
      */
     public static String condense(String function, FunctionKeyList key) {
         function = function.replaceAll(" ", "");
-
-
+        function = function.replaceAll("-0-", "-");
+        function = function.replaceAll("-0\\+", "+");
+        function = function.replaceAll("\\+0-", "-");
+        function = function.replaceAll("\\+0\\+", "\\+");
 
         if(DerivativeCalculator.replacement != null){
             function = function.replace("0x", "0");

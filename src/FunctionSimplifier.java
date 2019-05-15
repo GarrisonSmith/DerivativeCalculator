@@ -112,7 +112,7 @@ public class FunctionSimplifier {
 
         for (int i = 0; i < parts.length - 1; i++) {
             String current = key.getSimplifiedFunction(parts[i].replaceAll("-|\\||\\+", ""));
-            char currentSign = getSign(parts[i].replaceAll("-|\\||\\+", ""));
+            char currentSign = getSign(parts[i]);
             for (int ii = i + 1; ii < parts.length; ii++) {
                 String next = key.getSimplifiedFunction(parts[ii].replaceAll("-|\\||\\+", ""));
                 char nextSign = getSign(parts[ii]);
@@ -124,10 +124,12 @@ public class FunctionSimplifier {
                         if (currentSign == '-') {
                             parts[i] = "0";
                             parts[ii] = "-1";
+                            break;
                         }
                         else {
                             parts[i] = "0";
                             parts[ii] = "-1";
+                            break;
                         }
                     }
                     else if (degree == "1" || degree == "1.0") {
@@ -294,6 +296,7 @@ public class FunctionSimplifier {
                     }
                 }
             }
+
         }
 
 
